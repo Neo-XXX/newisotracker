@@ -29,8 +29,9 @@ npm install mongodb
 
 Set the `MONGO_URI` environment variable or update `server.js` with your
 connection string. A sample `.env.example` file is provided at the project root.
-Copy it to `.env` and replace the placeholder with your database URI. A sample
-connection string is shown below:
+Copy it to `.env` and replace the placeholder with your database URI. The server
+uses `dotenv` so values from `.env` are automatically loaded when you run
+`npm start`. A sample connection string is shown below:
 
 ```
 mongodb+srv://iso_user:<db_password>@isoapp.i6ozni3.mongodb.net/?retryWrites=true&w=majority&appName=isoapp
