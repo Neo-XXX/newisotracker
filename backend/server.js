@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
+import path from 'path';
 import leadRoutes from './routes/leads.js';
 import merchantRoutes from './routes/merchants.js';
 
@@ -14,7 +15,7 @@ app.use('/api/leads', leadRoutes);
 app.use('/api/merchants', merchantRoutes);
 
 app.get('/', (req, res) => {
-  res.json({ message: 'ISO Tracker API' });
+  res.sendFile(path.resolve('public', 'index.html'));
 });
 
 const MONGO_URI = process.env.MONGO_URI;

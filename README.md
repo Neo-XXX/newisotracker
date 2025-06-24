@@ -12,7 +12,8 @@ npm start
 
 The server will start on port 5000.
 
-Open your browser to `http://localhost:5000/` to view the static welcome page.
+Open your browser to `http://localhost:5000/` to view the dashboard that lists
+leads and merchants from the API.
 
 ## Connecting to MongoDB Atlas
 
