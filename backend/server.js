@@ -41,8 +41,12 @@ if (MONGO_URI && !MONGO_URI.includes('<db_password>')) {
     .catch((err) =>
       console.error('Failed to connect to MongoDB:', err.message)
     );
+  app.locals.useMemoryDB = false;
 } else {
-  console.log('No valid MongoDB connection string provided. Skipping DB connection.');
+  console.log('No valid MongoDB connection string provided. Using in-memory store.');
+  app.locals.useMemoryDB = true;
+  app.locals.memoryLeads = [];
+  app.locals.memoryMerchants = [];
 }
 
 if (!process.env.VERCEL) {
