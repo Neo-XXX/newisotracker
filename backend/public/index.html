@@ -3,14 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ISO Tracker Dashboard</title>
+  <title>ISO Tracker</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
     body {
       overflow-x: hidden;
     }
     #sidebar {
       min-height: 100vh;
+      background-color: #1f2937;
+    }
+    #sidebar .nav-link {
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      padding: 10px 15px;
+      border-radius: 4px;
+      margin-bottom: 5px;
+    }
+    #sidebar .nav-link i {
+      margin-right: 8px;
+    }
+    #sidebar .nav-link.active,
+    #sidebar .nav-link:hover {
+      background-color: #2563eb;
+      color: #fff;
     }
     .content-section {
       display: none;
@@ -30,19 +48,23 @@
   <div class="row">
     <nav id="sidebar" class="col-md-2 bg-light py-4">
       <ul class="nav flex-column">
-        <li class="nav-item"><a class="nav-link active" href="#" data-target="leads-section">Leads</a></li>
-        <li class="nav-item"><a class="nav-link" href="#" data-target="docs-section">Docs Uploaded</a></li>
-        <li class="nav-item"><a class="nav-link" href="#" data-target="application-section">Application Signed</a></li>
-        <li class="nav-item"><a class="nav-link" href="#" data-target="uw-section">Underwriting</a></li>
-        <li class="nav-item"><a class="nav-link" href="#" data-target="nmi-section">NMI Setup</a></li>
-        <li class="nav-item"><a class="nav-link" href="#" data-target="transactions-section">Transactions</a></li>
-        <li class="nav-item"><a class="nav-link" href="#" data-target="residuals-section">Residuals</a></li>
-        <li class="nav-item"><a class="nav-link" href="#" data-target="chargebacks-section">Chargebacks</a></li>
+        <li class="nav-item"><a class="nav-link active" href="#" data-target="home-section"><i class="fas fa-home"></i><span class="ms-2">Home</span></a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-target="leads-section"><i class="fas fa-user-plus"></i><span class="ms-2">Leads</span></a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-target="docs-section"><i class="fas fa-file-upload"></i><span class="ms-2">Docs Uploaded</span></a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-target="application-section"><i class="fas fa-file-signature"></i><span class="ms-2">Application Signed</span></a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-target="uw-section"><i class="fas fa-clipboard-check"></i><span class="ms-2">Underwriting</span></a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-target="nmi-section"><i class="fas fa-cogs"></i><span class="ms-2">NMI Setup</span></a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-target="transactions-section"><i class="fas fa-store"></i><span class="ms-2">Transactions</span></a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-target="residuals-section"><i class="fas fa-money-bill-wave"></i><span class="ms-2">Residuals</span></a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-target="chargebacks-section"><i class="fas fa-exclamation-circle"></i><span class="ms-2">Chargebacks</span></a></li>
       </ul>
     </nav>
     <main class="col-md-10 py-4">
-      <h1 class="mb-4">Dashboard</h1>
-      <div id="leads-section" class="content-section active">
+      <div id="home-section" class="content-section active">
+        <h2>Welcome</h2>
+        <p>Select an option from the menu to get started.</p>
+      </div>
+      <div id="leads-section" class="content-section">
         <h2>Leads</h2>
         <form id="lead-form" class="row g-3 mb-3">
           <div class="col-md-4"><input class="form-control" name="name" placeholder="Name" required></div>
@@ -119,10 +141,10 @@ async function loadMerchants() {
   });
 }
 
-document.querySelectorAll('#sidebar a').forEach(link => {
+document.querySelectorAll('#sidebar .nav-link').forEach(link => {
   link.addEventListener('click', (e) => {
     e.preventDefault();
-    document.querySelectorAll('#sidebar a').forEach(l => l.classList.remove('active'));
+    document.querySelectorAll('#sidebar .nav-link').forEach(l => l.classList.remove('active'));
     link.classList.add('active');
     document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
     document.getElementById(link.dataset.target).classList.add('active');
