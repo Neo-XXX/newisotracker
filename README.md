@@ -32,27 +32,3 @@ connection string is shown below:
 ```
 mongodb+srv://iso_user:<db_password>@isoapp.i6ozni3.mongodb.net/?retryWrites=true&w=majority&appName=isoapp
 ```
-
-## Environment Variables
-
-The backend expects the following environment variables when running locally or
-in production:
-
-| Variable   | Description                                   |
-| ---------- | --------------------------------------------- |
-| `MONGO_URI`| MongoDB connection string **(required)**       |
-| `PORT`     | Port the server listens on (defaults to `5000`)|
-
-Ensure these are configured in your environment or in the Vercel dashboard
-when deploying.
-
-## Deploying to Vercel
-
-1. [Sign up](https://vercel.com/signup) for a Vercel account and install the
-   GitHub integration.
-2. Import this repository into Vercel and set the `MONGO_URI` environment
-   variable in the project settings.
-3. Vercel will detect the `vercel.json` file and build the API using
-   `backend/server.js` as the entry point.
-4. After the build completes, Vercel provides a unique deployment URL such as
-   `https://your-project-name.vercel.app` which you can use to access the API.
