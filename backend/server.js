@@ -18,6 +18,11 @@ app.get('/', (req, res) => {
   res.sendFile(path.resolve('public', 'index.html'));
 });
 
+// Serve index.html for any other non-API route
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve('public', 'index.html'));
+});
+
 const MONGO_URI = process.env.MONGO_URI;
 
 if (MONGO_URI && !MONGO_URI.includes('<db_password>')) {
