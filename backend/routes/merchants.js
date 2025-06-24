@@ -14,4 +14,10 @@ router.post('/', async (req, res) => {
   res.json(merchant);
 });
 
+router.patch('/:id', async (req, res) => {
+  const { id } = req.params;
+  const merchant = await Merchant.findByIdAndUpdate(id, req.body, { new: true });
+  res.json(merchant);
+});
+
 export default router;

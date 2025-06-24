@@ -14,4 +14,10 @@ router.post('/', async (req, res) => {
   res.json(lead);
 });
 
+router.patch('/:id', async (req, res) => {
+  const { id } = req.params;
+  const lead = await Lead.findByIdAndUpdate(id, req.body, { new: true });
+  res.json(lead);
+});
+
 export default router;

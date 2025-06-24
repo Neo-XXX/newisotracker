@@ -6,7 +6,10 @@ const merchantSchema = new mongoose.Schema({
   processor: String,
   status: String,
   agent: String,
-  residualSplit: Number
+  residualSplit: Number,
+  nmiApiKey: String,
+  residuals: Number,
+  chargebacks: Number
 }, { timestamps: true });
 
 export default mongoose.model('Merchant', merchantSchema);
