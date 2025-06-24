@@ -50,13 +50,8 @@
       <ul class="nav flex-column">
         <li class="nav-item"><a class="nav-link active" href="#" data-target="home-section"><i class="fas fa-home"></i><span class="ms-2">Home</span></a></li>
         <li class="nav-item"><a class="nav-link" href="#" data-target="leads-section"><i class="fas fa-user-plus"></i><span class="ms-2">Leads</span></a></li>
-        <li class="nav-item"><a class="nav-link" href="#" data-target="docs-section"><i class="fas fa-file-upload"></i><span class="ms-2">Docs Uploaded</span></a></li>
-        <li class="nav-item"><a class="nav-link" href="#" data-target="application-section"><i class="fas fa-file-signature"></i><span class="ms-2">Application Signed</span></a></li>
-        <li class="nav-item"><a class="nav-link" href="#" data-target="uw-section"><i class="fas fa-clipboard-check"></i><span class="ms-2">Underwriting</span></a></li>
-        <li class="nav-item"><a class="nav-link" href="#" data-target="nmi-section"><i class="fas fa-cogs"></i><span class="ms-2">NMI Setup</span></a></li>
-        <li class="nav-item"><a class="nav-link" href="#" data-target="transactions-section"><i class="fas fa-store"></i><span class="ms-2">Transactions</span></a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-target="merchants-section"><i class="fas fa-store"></i><span class="ms-2">Merchants</span></a></li>
         <li class="nav-item"><a class="nav-link" href="#" data-target="residuals-section"><i class="fas fa-money-bill-wave"></i><span class="ms-2">Residuals</span></a></li>
-        <li class="nav-item"><a class="nav-link" href="#" data-target="chargebacks-section"><i class="fas fa-exclamation-circle"></i><span class="ms-2">Chargebacks</span></a></li>
       </ul>
     </nav>
     <main class="col-md-10 py-4">
@@ -79,27 +74,11 @@
           <tbody></tbody>
         </table>
       </div>
-      <div id="docs-section" class="content-section">
-        <h2>Docs Uploaded</h2>
-        <p>Track document collection and underwriting package.</p>
-      </div>
-      <div id="application-section" class="content-section">
-        <h2>Application Signed</h2>
-        <p>Upload and manage the signed application.</p>
-      </div>
-      <div id="uw-section" class="content-section">
-        <h2>Underwriting</h2>
-        <p>Record responses from underwriting and VAR uploads.</p>
-      </div>
-      <div id="nmi-section" class="content-section">
-        <h2>NMI Setup</h2>
-        <p>Store API keys and merchant account information.</p>
-      </div>
-      <div id="transactions-section" class="content-section">
+      <div id="merchants-section" class="content-section">
         <h2>Merchants</h2>
         <table class="table table-bordered" id="merchants-table">
           <thead class="table-light">
-            <tr><th>Name</th><th>MID</th><th>Processor</th><th>Status</th></tr>
+            <tr><th>Name</th><th>MID#</th><th>MCC</th><th>MTD Volume</th><th>Agent</th></tr>
           </thead>
           <tbody></tbody>
         </table>
@@ -107,10 +86,6 @@
       <div id="residuals-section" class="content-section">
         <h2>Residuals</h2>
         <p>Upload residual reports and calculate splits.</p>
-      </div>
-      <div id="chargebacks-section" class="content-section">
-        <h2>Chargebacks</h2>
-        <p>Manage chargebacks and disputes.</p>
       </div>
     </main>
   </div>
@@ -124,8 +99,32 @@ async function loadLeads() {
   tbody.innerHTML = '';
   leads.forEach(l => {
     const row = document.createElement('tr');
-    row.innerHTML = `<td>${l.name}</td><td>${l.email || ''}</td><td>${l.phone || ''}</td><td>${l.status}</td>`;
+    const statusOptions = ['document upload','application','pending','cancelled','approved'];
+    const select = document.createElement('select');
+    select.className = 'form-select form-select-sm lead-status';
+    select.dataset.id = l._id;
+    statusOptions.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s;
+      opt.textContent = s;
+      if (l.status === s) opt.selected = true;
+      select.appendChild(opt);
+    });
+    row.innerHTML = `<td>${l.name}</td><td>${l.email || ''}</td><td>${l.phone || ''}</td>`;
+    const td = document.createElement('td');
+    td.appendChild(select);
+    row.appendChild(td);
     tbody.appendChild(row);
+  });
+  document.querySelectorAll('.lead-status').forEach(sel => {
+    sel.addEventListener('change', async (e) => {
+      const id = e.target.dataset.id;
+      await fetch(`/api/leads/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: e.target.value })
+      });
+    });
   });
 }
 
@@ -134,9 +133,9 @@ async function loadMerchants() {
   const merchants = await res.json();
   const tbody = document.querySelector('#merchants-table tbody');
   tbody.innerHTML = '';
-  merchants.forEach(m => {
+  merchants.filter(m => m.status === 'approved').forEach(m => {
     const row = document.createElement('tr');
-    row.innerHTML = `<td>${m.name}</td><td>${m.mid || ''}</td><td>${m.processor || ''}</td><td>${m.status || ''}</td>`;
+    row.innerHTML = `<td>${m.name}</td><td>${m.mid || ''}</td><td>${m.mcc || ''}</td><td>${m.mtdVolume || 0}</td><td>${m.agent || ''}</td>`;
     tbody.appendChild(row);
   });
 }

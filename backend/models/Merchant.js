@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 const merchantSchema = new mongoose.Schema({
   name: { type: String, required: true },
   mid: String,
+  mcc: String,
+  mtdVolume: Number,
   processor: String,
   status: String,
   agent: String,
