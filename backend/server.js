@@ -5,7 +5,6 @@ import leadRoutes from './routes/leads.js';
 import merchantRoutes from './routes/merchants.js';
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
@@ -18,22 +17,27 @@ app.get('/', (req, res) => {
   res.json({ message: 'ISO Tracker API' });
 });
 
-const start = async () => {
-  const MONGO_URI =
-    process.env.MONGO_URI ||
-    'mongodb+srv://iso_user:<db_password>@isoapp.i6ozni3.mongodb.net/?retryWrites=true&w=majority&appName=isoapp';
-  try {
-    await mongoose.connect(MONGO_URI, {
+const MONGO_URI = process.env.MONGO_URI;
+
+if (MONGO_URI && !MONGO_URI.includes('<db_password>')) {
+  mongoose
+    .connect(MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-    });
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  } catch (err) {
-    console.error('Failed to connect to MongoDB:', err.message);
-    console.log('Could not start the server because the database connection failed.');
-  }
-};
+    })
+    .then(() => console.log('Connected to MongoDB'))
+    .catch((err) =>
+      console.error('Failed to connect to MongoDB:', err.message)
+    );
+} else {
+  console.log('No valid MongoDB connection string provided. Skipping DB connection.');
+}
 
-start();
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+export default app;
