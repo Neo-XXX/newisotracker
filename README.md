@@ -28,3 +28,7 @@ connection string. A sample connection string is provided below:
 ```
 mongodb+srv://iso_user:<db_password>@isoapp.i6ozni3.mongodb.net/?retryWrites=true&w=majority&appName=isoapp
 ```
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
