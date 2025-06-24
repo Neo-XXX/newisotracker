@@ -55,25 +55,62 @@
       </ul>
     </nav>
     <main class="col-md-10 py-4">
-      <div id="home-section" class="content-section active">
-        <h2>Welcome</h2>
-        <p>Select an option from the menu to get started.</p>
-      </div>
-      <div id="leads-section" class="content-section">
-        <h2>Leads</h2>
-        <form id="lead-form" class="row g-3 mb-3">
-          <div class="col-md-4"><input class="form-control" name="name" placeholder="Name" required></div>
-          <div class="col-md-4"><input class="form-control" name="email" placeholder="Email"></div>
-          <div class="col-md-2"><input class="form-control" name="phone" placeholder="Phone"></div>
-          <div class="col-md-2"><button class="btn btn-primary w-100" type="submit">Add Lead</button></div>
-        </form>
-        <table class="table table-bordered" id="leads-table">
-          <thead class="table-light">
-            <tr><th>Name</th><th>Email</th><th>Phone</th><th>Status</th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
+        <div id="home-section" class="content-section active">
+          <h2>Dashboard</h2>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <div class="card">
+                <div class="card-header">Active Leads</div>
+                <ul class="list-group list-group-flush" id="dashboard-active-leads"></ul>
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <div class="card">
+                <div class="card-header">Active Merchants</div>
+                <ul class="list-group list-group-flush" id="dashboard-active-merchants"></ul>
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <div class="card">
+                <div class="card-header">Residuals</div>
+                <div class="card-body">
+                  <p class="mb-0">Upload residual reports and calculate splits.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="leads-section" class="content-section">
+          <h2>Leads</h2>
+          <form id="lead-form" class="row g-3 mb-3">
+            <div class="col-md-4"><input class="form-control" name="name" placeholder="Name" required></div>
+            <div class="col-md-4"><input class="form-control" name="email" placeholder="Email"></div>
+            <div class="col-md-2"><input class="form-control" name="phone" placeholder="Phone"></div>
+            <div class="col-md-2"><button class="btn btn-primary w-100" type="submit">Add Lead</button></div>
+          </form>
+          <div class="row text-center" id="lead-stages">
+            <div class="col">
+              <h5>Document Upload</h5>
+              <ul class="list-group" id="stage-document-upload"></ul>
+            </div>
+            <div class="col">
+              <h5>Application</h5>
+              <ul class="list-group" id="stage-application"></ul>
+            </div>
+            <div class="col">
+              <h5>Pending</h5>
+              <ul class="list-group" id="stage-pending"></ul>
+            </div>
+            <div class="col">
+              <h5>Cancelled</h5>
+              <ul class="list-group" id="stage-cancelled"></ul>
+            </div>
+            <div class="col">
+              <h5>Approved</h5>
+              <ul class="list-group" id="stage-approved"></ul>
+            </div>
+          </div>
+        </div>
       <div id="merchants-section" class="content-section">
         <h2>Merchants</h2>
         <table class="table table-bordered" id="merchants-table">
@@ -92,16 +129,52 @@
 </div>
 
 <script>
+function updateDashboardLeads(leads) {
+  const list = document.getElementById('dashboard-active-leads');
+  if (!list) return;
+  list.innerHTML = '';
+  leads.filter(l => l.status !== 'cancelled' && l.status !== 'approved').forEach(l => {
+    const li = document.createElement('li');
+    li.className = 'list-group-item';
+    li.textContent = l.name;
+    list.appendChild(li);
+  });
+}
+
+function updateDashboardMerchants(merchants) {
+  const list = document.getElementById('dashboard-active-merchants');
+  if (!list) return;
+  list.innerHTML = '';
+  merchants.filter(m => m.status === 'approved').forEach(m => {
+    const li = document.createElement('li');
+    li.className = 'list-group-item';
+    li.textContent = m.name;
+    list.appendChild(li);
+  });
+}
+
 async function loadLeads() {
   const res = await fetch('/api/leads');
   const leads = await res.json();
-  const tbody = document.querySelector('#leads-table tbody');
-  tbody.innerHTML = '';
+
+  const stageMap = {
+    'document upload': document.getElementById('stage-document-upload'),
+    'application': document.getElementById('stage-application'),
+    'pending': document.getElementById('stage-pending'),
+    'cancelled': document.getElementById('stage-cancelled'),
+    'approved': document.getElementById('stage-approved')
+  };
+  Object.values(stageMap).forEach(ul => ul && (ul.innerHTML = ''));
+  const statusOptions = Object.keys(stageMap);
+
   leads.forEach(l => {
-    const row = document.createElement('tr');
-    const statusOptions = ['document upload','application','pending','cancelled','approved'];
+    const ul = stageMap[l.status];
+    if (!ul) return;
+    const li = document.createElement('li');
+    li.className = 'list-group-item';
+    li.innerHTML = `<strong>${l.name}</strong>`;
     const select = document.createElement('select');
-    select.className = 'form-select form-select-sm lead-status';
+    select.className = 'form-select form-select-sm lead-status mt-1';
     select.dataset.id = l._id;
     statusOptions.forEach(s => {
       const opt = document.createElement('option');
@@ -110,12 +183,10 @@ async function loadLeads() {
       if (l.status === s) opt.selected = true;
       select.appendChild(opt);
     });
-    row.innerHTML = `<td>${l.name}</td><td>${l.email || ''}</td><td>${l.phone || ''}</td>`;
-    const td = document.createElement('td');
-    td.appendChild(select);
-    row.appendChild(td);
-    tbody.appendChild(row);
+    li.appendChild(select);
+    ul.appendChild(li);
   });
+
   document.querySelectorAll('.lead-status').forEach(sel => {
     sel.addEventListener('change', async (e) => {
       const id = e.target.dataset.id;
@@ -124,8 +195,11 @@ async function loadLeads() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: e.target.value })
       });
+      loadLeads();
     });
   });
+
+  updateDashboardLeads(leads);
 }
 
 async function loadMerchants() {
@@ -138,6 +212,7 @@ async function loadMerchants() {
     row.innerHTML = `<td>${m.name}</td><td>${m.mid || ''}</td><td>${m.mcc || ''}</td><td>${m.mtdVolume || 0}</td><td>${m.agent || ''}</td>`;
     tbody.appendChild(row);
   });
+  updateDashboardMerchants(merchants);
 }
 
 document.querySelectorAll('#sidebar .nav-link').forEach(link => {
