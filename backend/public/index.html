@@ -5,6 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ISO Tracker Dashboard</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      overflow-x: hidden;
+    }
+    #sidebar {
+      min-height: 100vh;
+    }
+    .content-section {
+      display: none;
+    }
+    .content-section.active {
+      display: block;
+    }
+  </style>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
@@ -12,27 +26,71 @@
     <a class="navbar-brand" href="#">ISO Tracker</a>
   </div>
 </nav>
-<div class="container">
-  <h1 class="mb-4">Dashboard</h1>
+<div class="container-fluid">
   <div class="row">
-    <div class="col-md-6 mb-4">
-      <h2>Leads</h2>
-      <table class="table table-bordered" id="leads-table">
-        <thead class="table-light">
-          <tr><th>Name</th><th>Email</th><th>Phone</th><th>Status</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-    <div class="col-md-6 mb-4">
-      <h2>Merchants</h2>
-      <table class="table table-bordered" id="merchants-table">
-        <thead class="table-light">
-          <tr><th>Name</th><th>MID</th><th>Processor</th><th>Status</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
+    <nav id="sidebar" class="col-md-2 bg-light py-4">
+      <ul class="nav flex-column">
+        <li class="nav-item"><a class="nav-link active" href="#" data-target="leads-section">Leads</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-target="docs-section">Docs Uploaded</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-target="application-section">Application Signed</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-target="uw-section">Underwriting</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-target="nmi-section">NMI Setup</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-target="transactions-section">Transactions</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-target="residuals-section">Residuals</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-target="chargebacks-section">Chargebacks</a></li>
+      </ul>
+    </nav>
+    <main class="col-md-10 py-4">
+      <h1 class="mb-4">Dashboard</h1>
+      <div id="leads-section" class="content-section active">
+        <h2>Leads</h2>
+        <form id="lead-form" class="row g-3 mb-3">
+          <div class="col-md-4"><input class="form-control" name="name" placeholder="Name" required></div>
+          <div class="col-md-4"><input class="form-control" name="email" placeholder="Email"></div>
+          <div class="col-md-2"><input class="form-control" name="phone" placeholder="Phone"></div>
+          <div class="col-md-2"><button class="btn btn-primary w-100" type="submit">Add Lead</button></div>
+        </form>
+        <table class="table table-bordered" id="leads-table">
+          <thead class="table-light">
+            <tr><th>Name</th><th>Email</th><th>Phone</th><th>Status</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div id="docs-section" class="content-section">
+        <h2>Docs Uploaded</h2>
+        <p>Track document collection and underwriting package.</p>
+      </div>
+      <div id="application-section" class="content-section">
+        <h2>Application Signed</h2>
+        <p>Upload and manage the signed application.</p>
+      </div>
+      <div id="uw-section" class="content-section">
+        <h2>Underwriting</h2>
+        <p>Record responses from underwriting and VAR uploads.</p>
+      </div>
+      <div id="nmi-section" class="content-section">
+        <h2>NMI Setup</h2>
+        <p>Store API keys and merchant account information.</p>
+      </div>
+      <div id="transactions-section" class="content-section">
+        <h2>Merchants</h2>
+        <table class="table table-bordered" id="merchants-table">
+          <thead class="table-light">
+            <tr><th>Name</th><th>MID</th><th>Processor</th><th>Status</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div id="residuals-section" class="content-section">
+        <h2>Residuals</h2>
+        <p>Upload residual reports and calculate splits.</p>
+      </div>
+      <div id="chargebacks-section" class="content-section">
+        <h2>Chargebacks</h2>
+        <p>Manage chargebacks and disputes.</p>
+      </div>
+    </main>
   </div>
 </div>
 
@@ -41,6 +99,7 @@ async function loadLeads() {
   const res = await fetch('/api/leads');
   const leads = await res.json();
   const tbody = document.querySelector('#leads-table tbody');
+  tbody.innerHTML = '';
   leads.forEach(l => {
     const row = document.createElement('tr');
     row.innerHTML = `<td>${l.name}</td><td>${l.email || ''}</td><td>${l.phone || ''}</td><td>${l.status}</td>`;
@@ -52,12 +111,36 @@ async function loadMerchants() {
   const res = await fetch('/api/merchants');
   const merchants = await res.json();
   const tbody = document.querySelector('#merchants-table tbody');
+  tbody.innerHTML = '';
   merchants.forEach(m => {
     const row = document.createElement('tr');
     row.innerHTML = `<td>${m.name}</td><td>${m.mid || ''}</td><td>${m.processor || ''}</td><td>${m.status || ''}</td>`;
     tbody.appendChild(row);
   });
 }
+
+document.querySelectorAll('#sidebar a').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.querySelectorAll('#sidebar a').forEach(l => l.classList.remove('active'));
+    link.classList.add('active');
+    document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
+    document.getElementById(link.dataset.target).classList.add('active');
+  });
+});
+
+document.getElementById('lead-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const data = Object.fromEntries(formData.entries());
+  await fetch('/api/leads', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  e.target.reset();
+  loadLeads();
+});
 
 loadLeads();
 loadMerchants();

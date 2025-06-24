@@ -7,7 +7,17 @@ const leadSchema = new mongoose.Schema({
   source: String,
   notes: String,
   agent: String,
-  status: { type: String, default: 'new' }
+  status: { type: String, default: 'new' },
+  acquiringBank: String,
+  docsUploaded: { type: Boolean, default: false },
+  applicationSigned: { type: Boolean, default: false },
+  underwritingStatus: String,
+  varSheetUploaded: { type: Boolean, default: false },
+  nmiApiKey: String,
+  transacting: { type: Boolean, default: false },
+  residualsUploaded: { type: Boolean, default: false },
+  residualAuditStatus: String,
+  chargebacks: { type: Number, default: 0 }
 }, { timestamps: true });
 
 export default mongoose.model('Lead', leadSchema);
