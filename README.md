@@ -12,6 +12,8 @@ npm start
 
 The server will start on port 5000.
 
+Open your browser to `http://localhost:5000/` to view the static welcome page.
+
 ## Connecting to MongoDB Atlas
 
 This project uses Mongoose, which relies on the MongoDB Node.js driver. If you
