@@ -82,12 +82,39 @@
         </div>
         <div id="leads-section" class="content-section">
           <h2>Leads</h2>
-          <form id="lead-form" class="row g-3 mb-3">
-            <div class="col-md-4"><input class="form-control" name="name" placeholder="Name" required></div>
-            <div class="col-md-4"><input class="form-control" name="email" placeholder="Email"></div>
-            <div class="col-md-2"><input class="form-control" name="phone" placeholder="Phone"></div>
-            <div class="col-md-2"><button class="btn btn-primary w-100" type="submit">Add Lead</button></div>
-          </form>
+          <button id="show-add-lead" class="btn btn-primary mb-3">Add Lead</button>
+
+          <!-- Lead Modal -->
+          <div class="modal fade" id="lead-modal" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <form id="lead-modal-form">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Lead</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="mb-3">
+                      <label class="form-label">Name</label>
+                      <input id="lead-name" class="form-control" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Email</label>
+                      <input id="lead-email" class="form-control" name="email">
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Phone</label>
+                      <input id="lead-phone" class="form-control" name="phone">
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
           <div class="row text-center" id="lead-stages">
             <div class="col">
               <h5>Document Upload</h5>
@@ -128,6 +155,7 @@
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 function updateDashboardLeads(leads) {
   const list = document.getElementById('dashboard-active-leads');
@@ -153,54 +181,63 @@ function updateDashboardMerchants(merchants) {
   });
 }
 
-async function loadLeads() {
-  const res = await fetch('/api/leads');
-  const leads = await res.json();
+  let currentLead = null;
 
-  const stageMap = {
-    'document upload': document.getElementById('stage-document-upload'),
-    'application': document.getElementById('stage-application'),
-    'pending': document.getElementById('stage-pending'),
-    'cancelled': document.getElementById('stage-cancelled'),
-    'approved': document.getElementById('stage-approved')
-  };
-  Object.values(stageMap).forEach(ul => ul && (ul.innerHTML = ''));
-  const statusOptions = Object.keys(stageMap);
+  async function loadLeads() {
+    const res = await fetch('/api/leads');
+    const leads = await res.json();
 
-  leads.forEach(l => {
-    const ul = stageMap[l.status];
-    if (!ul) return;
-    const li = document.createElement('li');
-    li.className = 'list-group-item';
-    li.innerHTML = `<strong>${l.name}</strong>`;
-    const select = document.createElement('select');
-    select.className = 'form-select form-select-sm lead-status mt-1';
-    select.dataset.id = l._id;
-    statusOptions.forEach(s => {
-      const opt = document.createElement('option');
-      opt.value = s;
-      opt.textContent = s;
-      if (l.status === s) opt.selected = true;
-      select.appendChild(opt);
-    });
-    li.appendChild(select);
-    ul.appendChild(li);
-  });
+    const stageMap = {
+      'document upload': document.getElementById('stage-document-upload'),
+      'application': document.getElementById('stage-application'),
+      'pending': document.getElementById('stage-pending'),
+      'cancelled': document.getElementById('stage-cancelled'),
+      'approved': document.getElementById('stage-approved')
+    };
+    Object.values(stageMap).forEach(ul => ul && (ul.innerHTML = ''));
 
-  document.querySelectorAll('.lead-status').forEach(sel => {
-    sel.addEventListener('change', async (e) => {
-      const id = e.target.dataset.id;
-      await fetch(`/api/leads/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: e.target.value })
+    leads.forEach(l => {
+      const ul = stageMap[l.status];
+      if (!ul) return;
+      const li = document.createElement('li');
+      li.className = 'list-group-item lead-item';
+      li.textContent = l.name;
+      li.draggable = true;
+      li.dataset.id = l._id;
+
+      li.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('text/plain', l._id);
       });
-      loadLeads();
-    });
-  });
 
-  updateDashboardLeads(leads);
-}
+      li.addEventListener('click', () => {
+        currentLead = l._id;
+        document.getElementById('lead-name').value = l.name || '';
+        document.getElementById('lead-email').value = l.email || '';
+        document.getElementById('lead-phone').value = l.phone || '';
+        document.getElementById('lead-modal-form').dataset.id = l._id;
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('lead-modal')).show();
+      });
+
+      ul.appendChild(li);
+    });
+
+    Object.entries(stageMap).forEach(([status, ul]) => {
+      ul.addEventListener('dragover', e => e.preventDefault());
+      ul.addEventListener('drop', async e => {
+        e.preventDefault();
+        const id = e.dataTransfer.getData('text/plain');
+        if (!id) return;
+        await fetch(`/api/leads/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status })
+        });
+        loadLeads();
+      });
+    });
+
+    updateDashboardLeads(leads);
+  }
 
 async function loadMerchants() {
   const res = await fetch('/api/merchants');
@@ -225,16 +262,26 @@ document.querySelectorAll('#sidebar .nav-link').forEach(link => {
   });
 });
 
-document.getElementById('lead-form').addEventListener('submit', async (e) => {
+document.getElementById('show-add-lead').addEventListener('click', () => {
+  const form = document.getElementById('lead-modal-form');
+  form.reset();
+  delete form.dataset.id;
+  bootstrap.Modal.getOrCreateInstance(document.getElementById('lead-modal')).show();
+});
+
+document.getElementById('lead-modal-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const formData = new FormData(e.target);
   const data = Object.fromEntries(formData.entries());
-  await fetch('/api/leads', {
-    method: 'POST',
+  const id = e.target.dataset.id;
+  const method = id ? 'PATCH' : 'POST';
+  const url = id ? `/api/leads/${id}` : '/api/leads';
+  await fetch(url, {
+    method,
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   });
-  e.target.reset();
+  bootstrap.Modal.getInstance(document.getElementById('lead-modal')).hide();
   loadLeads();
 });
 
