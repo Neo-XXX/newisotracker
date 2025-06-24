@@ -18,7 +18,9 @@ app.get('/', (req, res) => {
 });
 
 const start = async () => {
-  const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost/isotracker';
+  const MONGO_URI =
+    process.env.MONGO_URI ||
+    'mongodb+srv://iso_user:<db_password>@isoapp.i6ozni3.mongodb.net/?retryWrites=true&w=majority&appName=isoapp';
   await mongoose.connect(MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
