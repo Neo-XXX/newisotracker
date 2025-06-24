@@ -1,0 +1,12 @@
+import mongoose from 'mongoose';
+
+const merchantSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  mid: String,
+  processor: String,
+  status: String,
+  agent: String,
+  residualSplit: Number
+}, { timestamps: true });
+
+export default mongoose.model('Merchant', merchantSchema);
