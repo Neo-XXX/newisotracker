@@ -10,7 +10,9 @@ npm install
 npm start
 ```
 
-The server will start on port 5000.
+The server will start on port 5000. Because static files are resolved relative to
+`backend/server.js`, you can also run the server from the project root using
+`node backend/server.js` without encountering missing file errors.
 
 Open your browser to `http://localhost:5000/` to view the dashboard that lists
 leads and merchants from the API.

@@ -2,25 +2,28 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import leadRoutes from './routes/leads.js';
 import merchantRoutes from './routes/merchants.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/leads', leadRoutes);
 app.use('/api/merchants', merchantRoutes);
 
 app.get('/', (req, res) => {
-  res.sendFile(path.resolve('public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Serve index.html for any other non-API route
 app.get('*', (req, res) => {
-  res.sendFile(path.resolve('public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 const MONGO_URI = process.env.MONGO_URI;
