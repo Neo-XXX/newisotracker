@@ -15,11 +15,18 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
   if (req.app.locals.useMemoryDB) {
-    const merchant = { _id: new mongoose.Types.ObjectId().toString(), ...req.body };
+    const merchant = {
+      _id: new mongoose.Types.ObjectId().toString(),
+      volume: { daily: 0, weekly: 0, ytd: 0 },
+      ...req.body
+    };
     req.app.locals.memoryMerchants.push(merchant);
     res.json(merchant);
   } else {
-    const merchant = new Merchant(req.body);
+    const merchant = new Merchant({
+      volume: { daily: 0, weekly: 0, ytd: 0 },
+      ...req.body
+    });
     await merchant.save();
     res.json(merchant);
   }

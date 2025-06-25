@@ -18,7 +18,9 @@ router.post('/', async (req, res) => {
   if (req.app.locals.useMemoryDB) {
     const lead = { _id: new mongoose.Types.ObjectId().toString(), ...req.body };
     req.app.locals.memoryLeads.push(lead);
-    if (lead.approved) {
+    const isApproved = lead.status === 'approved' || lead.approved;
+    if (isApproved) {
+      lead.approved = true;
       const exists = req.app.locals.memoryMerchants.find(
         m => m.name === lead.name && m.email === lead.email
       );
@@ -32,7 +34,8 @@ router.post('/', async (req, res) => {
           nmiApiKey: lead.nmiApiKey,
           transactionFee: lead.transactionFee,
           authorizationFee: lead.authorizationFee,
-          pricingModel: lead.pricingModel
+          pricingModel: lead.pricingModel,
+          status: 'approved'
         };
         req.app.locals.memoryMerchants.push(merchant);
       }
@@ -41,7 +44,9 @@ router.post('/', async (req, res) => {
   } else {
     const lead = new Lead(req.body);
     await lead.save();
-    if (lead.approved) {
+    const isApproved = lead.status === 'approved' || lead.approved;
+    if (isApproved) {
+      lead.approved = true;
       const exists = await Merchant.findOne({
         name: lead.name,
         email: lead.email
@@ -55,7 +60,8 @@ router.post('/', async (req, res) => {
           nmiApiKey: lead.nmiApiKey,
           transactionFee: lead.transactionFee,
           authorizationFee: lead.authorizationFee,
-          pricingModel: lead.pricingModel
+          pricingModel: lead.pricingModel,
+          status: 'approved'
         });
         await merchant.save();
       }
@@ -72,7 +78,9 @@ router.patch('/:id', async (req, res) => {
     if (index === -1) return res.status(404).json({ error: 'Not found' });
     leads[index] = { ...leads[index], ...req.body };
     const lead = leads[index];
-    if (lead.approved) {
+    const isApproved = lead.status === 'approved' || lead.approved;
+    if (isApproved) {
+      lead.approved = true;
       const exists = req.app.locals.memoryMerchants.find(
         m => m.name === lead.name && m.email === lead.email
       );
@@ -86,7 +94,8 @@ router.patch('/:id', async (req, res) => {
           nmiApiKey: lead.nmiApiKey,
           transactionFee: lead.transactionFee,
           authorizationFee: lead.authorizationFee,
-          pricingModel: lead.pricingModel
+          pricingModel: lead.pricingModel,
+          status: 'approved'
         };
         req.app.locals.memoryMerchants.push(merchant);
       }
@@ -94,7 +103,9 @@ router.patch('/:id', async (req, res) => {
     res.json(lead);
   } else {
     const lead = await Lead.findByIdAndUpdate(id, req.body, { new: true });
-    if (lead && lead.approved) {
+    const isApproved = lead && (lead.status === 'approved' || lead.approved);
+    if (isApproved) {
+      lead.approved = true;
       const exists = await Merchant.findOne({
         name: lead.name,
         email: lead.email
@@ -108,7 +119,8 @@ router.patch('/:id', async (req, res) => {
           nmiApiKey: lead.nmiApiKey,
           transactionFee: lead.transactionFee,
           authorizationFee: lead.authorizationFee,
-          pricingModel: lead.pricingModel
+          pricingModel: lead.pricingModel,
+          status: 'approved'
         });
         await merchant.save();
       }
