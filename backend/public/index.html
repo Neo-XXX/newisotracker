@@ -523,6 +523,8 @@ function updateDashboardMerchants(merchants) {
 
       li.addEventListener('click', () => {
         currentLead = l._id;
+        const form = document.getElementById('lead-form');
+        form.dataset.id = l._id;
         document.getElementById('lead-name').value = l.name || '';
         document.getElementById('lead-email').value = l.email || '';
         document.getElementById('lead-phone').value = l.phone || '';
