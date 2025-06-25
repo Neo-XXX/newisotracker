@@ -384,10 +384,12 @@ function updateDashboardMerchants(merchants) {
 }
 
   let currentLead = null;
+  let leadsData = [];
 
   async function loadLeads() {
     const res = await fetch('/api/leads');
-    const leads = await res.json();
+    leadsData = await res.json();
+    const leads = leadsData;
 
     const stageMap = {
       'document upload': {
@@ -482,11 +484,16 @@ function updateDashboardMerchants(merchants) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status })
         });
-        await loadLeads();
+        const li = document.querySelector(`.lead-item[data-id="${id}"]`);
+        const list = target.querySelector('ul');
+        if (li && list) list.appendChild(li);
+        const moved = leadsData.find(l => l._id === id);
+        if (moved) moved.status = status;
+        updateDashboardLeads(leadsData);
       });
     });
 
-    updateDashboardLeads(leads);
+    updateDashboardLeads(leadsData);
   }
 
 async function loadMerchants() {
