@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import leadRoutes from './routes/leads.js';
 import merchantRoutes from './routes/merchants.js';
+import processorRoutes from './routes/processors.js';
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/leads', leadRoutes);
 app.use('/api/merchants', merchantRoutes);
+app.use('/api/processors', processorRoutes);
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -36,6 +38,7 @@ const MONGO_URI =
 app.locals.useMemoryDB = true;
 app.locals.memoryLeads = [];
 app.locals.memoryMerchants = [];
+app.locals.memoryProcessors = [];
 
 async function connectAndStart() {
   if (MONGO_URI && !MONGO_URI.includes('<db_password>')) {

@@ -198,6 +198,7 @@
         <li class="nav-item"><a class="nav-link active" href="#" data-target="home-section"><i class="fas fa-home"></i><span class="ms-2">Home</span></a></li>
         <li class="nav-item"><a class="nav-link" href="#" data-target="leads-section"><i class="fas fa-user-plus"></i><span class="ms-2">Leads</span></a></li>
         <li class="nav-item"><a class="nav-link" href="#" data-target="merchants-section"><i class="fas fa-store"></i><span class="ms-2">Merchants</span></a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-target="processors-section"><i class="fas fa-cogs"></i><span class="ms-2">Processors</span></a></li>
         <li class="nav-item"><a class="nav-link" href="#" data-target="residuals-section"><i class="fas fa-money-bill-wave"></i><span class="ms-2">Residuals</span></a></li>
       </ul>
     </nav>
@@ -433,6 +434,17 @@
           <tbody></tbody>
         </table>
       </div>
+      <div id="processors-section" class="content-section">
+        <h2>Processors</h2>
+        <table class="table table-hover" id="processors-table">
+          <thead class="table-light">
+            <tr>
+              <th>Name</th><th>ISO Split %</th><th>Contact</th><th>Phone</th><th>Email</th><th>Notes</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
       <div id="residuals-section" class="content-section">
         <h2>Residuals</h2>
         <p>Upload residual reports and calculate splits.</p>
@@ -649,6 +661,24 @@ async function loadMerchants() {
   updateDashboardMerchants(merchants);
 }
 
+async function loadProcessors() {
+  const res = await fetch('/api/processors');
+  const processors = await res.json();
+  const tbody = document.querySelector('#processors-table tbody');
+  tbody.innerHTML = '';
+  processors.forEach(p => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${p.name}</td>
+      <td>${p.isoSplit ?? ''}</td>
+      <td>${p.contact || ''}</td>
+      <td>${p.phone || ''}</td>
+      <td>${p.email || ''}</td>
+      <td>${p.notes || ''}</td>`;
+    tbody.appendChild(row);
+  });
+}
+
 document.querySelectorAll('#sidebar .nav-link').forEach(link => {
   link.addEventListener('click', (e) => {
     e.preventDefault();
@@ -718,6 +748,7 @@ document.getElementById('delete-lead').addEventListener('click', async () => {
 
 loadLeads();
 loadMerchants();
+loadProcessors();
 </script>
 </body>
 </html>
