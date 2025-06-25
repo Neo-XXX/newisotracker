@@ -820,7 +820,7 @@ async function loadMerchants() {
       <td>${m.authorizationFee ?? ''}</td>
       <td>${m.pricingModel || ''}</td>
       <td>${m.residuals ?? ''}</td>
-      <td>${m.chargebacks ?? ''}`;
+      <td>${m.chargebacks ?? ''}</td>`;
     row.dataset.id = m._id;
     row.addEventListener('click', () => {
       currentMerchant = m._id;
