@@ -430,15 +430,108 @@
           </div>
       <div id="merchants-section" class="content-section">
         <h2>Merchants</h2>
-        <table class="table table-hover" id="merchants-table">
-          <thead class="table-light">
-            <tr>
-              <th>Name</th><th>MID#</th><th>MCC</th><th>MTD Volume</th><th>Agent</th>
-              <th>Trans Fee</th><th>Auth Fee</th><th>Pricing</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+        <button id="show-add-merchant" class="btn btn-primary btn-sm mb-3 d-block">Add Merchant</button>
+        <div id="merchant-interface" class="d-flex gap-3">
+          <div class="flex-grow-1">
+            <table class="table table-hover" id="merchants-table">
+              <thead class="table-light">
+                <tr>
+                  <th>Name</th><th>Email</th><th>MID#</th><th>MCC</th><th>Daily Vol</th><th>Weekly Vol</th><th>MTD Vol</th><th>YTD Vol</th><th>Processor</th><th>Status</th><th>Agent</th><th>Residual Split</th><th>NMI API Key</th><th>Trans Fee</th><th>Auth Fee</th><th>Pricing</th><th>Residuals</th><th>Chargebacks</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div id="merchant-panel" class="lead-panel d-none">
+            <form id="merchant-form">
+              <h5 class="mb-2">Merchant</h5>
+              <div class="container-fluid p-0">
+                <div class="row g-2">
+                  <div class="col-md-6">
+                    <label class="form-label">Name</label>
+                    <input id="merchant-name" class="form-control" name="name" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Email</label>
+                    <input id="merchant-email" class="form-control" name="email">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">MID</label>
+                    <input id="merchant-mid" class="form-control" name="mid">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">MCC</label>
+                    <input id="merchant-mcc" class="form-control" name="mcc">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">MTD Volume</label>
+                    <input type="number" step="0.01" id="merchant-mtd-volume" class="form-control" name="mtdVolume">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Daily Volume</label>
+                    <input type="number" step="0.01" id="merchant-daily-volume" class="form-control" name="daily">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Weekly Volume</label>
+                    <input type="number" step="0.01" id="merchant-weekly-volume" class="form-control" name="weekly">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">YTD Volume</label>
+                    <input type="number" step="0.01" id="merchant-ytd-volume" class="form-control" name="ytd">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Processor</label>
+                    <select id="merchant-processor" class="form-select" name="processor"></select>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Status</label>
+                    <input id="merchant-status" class="form-control" name="status">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Agent</label>
+                    <input id="merchant-agent" class="form-control" name="agent">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Residual Split %</label>
+                    <input type="number" step="0.01" id="merchant-residual-split" class="form-control" name="residualSplit">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">NMI API Key</label>
+                    <input id="merchant-nmi-api-key" class="form-control" name="nmiApiKey">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Transaction Fee</label>
+                    <input type="number" step="0.01" id="merchant-transaction-fee" class="form-control" name="transactionFee">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Authorization Fee</label>
+                    <input type="number" step="0.01" id="merchant-authorization-fee" class="form-control" name="authorizationFee">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Pricing Model</label>
+                    <select id="merchant-pricing-model" class="form-select" name="pricingModel">
+                      <option value="Flat Rate">Flat Rate</option>
+                      <option value="Interchange Plus">Interchange Plus</option>
+                      <option value="Tiered">Tiered</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Residuals</label>
+                    <input type="number" step="0.01" id="merchant-residuals" class="form-control" name="residuals">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Chargebacks</label>
+                    <input type="number" step="0.01" id="merchant-chargebacks" class="form-control" name="chargebacks">
+                  </div>
+                </div>
+              </div>
+              <div class="mt-3 text-end">
+                <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                <button type="button" id="cancel-merchant" class="btn btn-secondary btn-sm">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
       <div id="processors-section" class="content-section">
         <h2>Processors</h2>
@@ -572,6 +665,7 @@ function updateDashboardMerchants(merchants) {
   let currentLead = null;
   let leadsData = [];
   let currentProcessor = null;
+  let currentMerchant = null;
 
   async function loadLeads() {
     const res = await fetch('/api/leads');
@@ -696,17 +790,52 @@ async function loadMerchants() {
   const merchants = await res.json();
   const tbody = document.querySelector('#merchants-table tbody');
   tbody.innerHTML = '';
-  merchants.filter(m => m.status === 'approved').forEach(m => {
+  merchants.forEach(m => {
     const row = document.createElement('tr');
     row.innerHTML = `
       <td>${m.name}</td>
+      <td>${m.email || ''}</td>
       <td>${m.mid || ''}</td>
       <td>${m.mcc || ''}</td>
-      <td>${m.mtdVolume || 0}</td>
+      <td>${m.volume?.daily ?? ''}</td>
+      <td>${m.volume?.weekly ?? ''}</td>
+      <td>${m.mtdVolume ?? ''}</td>
+      <td>${m.volume?.ytd ?? ''}</td>
+      <td>${m.processor || ''}</td>
+      <td>${m.status || ''}</td>
       <td>${m.agent || ''}</td>
+      <td>${m.residualSplit ?? ''}</td>
+      <td>${m.nmiApiKey || ''}</td>
       <td>${m.transactionFee ?? ''}</td>
       <td>${m.authorizationFee ?? ''}</td>
-      <td>${m.pricingModel || ''}</td>`;
+      <td>${m.pricingModel || ''}</td>
+      <td>${m.residuals ?? ''}</td>
+      <td>${m.chargebacks ?? ''}`;
+    row.dataset.id = m._id;
+    row.addEventListener('click', () => {
+      currentMerchant = m._id;
+      const form = document.getElementById('merchant-form');
+      form.dataset.id = m._id;
+      document.getElementById('merchant-name').value = m.name || '';
+      document.getElementById('merchant-email').value = m.email || '';
+      document.getElementById('merchant-mid').value = m.mid || '';
+      document.getElementById('merchant-mcc').value = m.mcc || '';
+      document.getElementById('merchant-mtd-volume').value = m.mtdVolume ?? '';
+      document.getElementById('merchant-daily-volume').value = m.volume?.daily ?? '';
+      document.getElementById('merchant-weekly-volume').value = m.volume?.weekly ?? '';
+      document.getElementById('merchant-ytd-volume').value = m.volume?.ytd ?? '';
+      document.getElementById('merchant-processor').value = m.processor || '';
+      document.getElementById('merchant-status').value = m.status || '';
+      document.getElementById('merchant-agent').value = m.agent || '';
+      document.getElementById('merchant-residual-split').value = m.residualSplit ?? '';
+      document.getElementById('merchant-nmi-api-key').value = m.nmiApiKey || '';
+      document.getElementById('merchant-transaction-fee').value = m.transactionFee ?? '';
+      document.getElementById('merchant-authorization-fee').value = m.authorizationFee ?? '';
+      document.getElementById('merchant-pricing-model').value = m.pricingModel || 'Flat Rate';
+      document.getElementById('merchant-residuals').value = m.residuals ?? '';
+      document.getElementById('merchant-chargebacks').value = m.chargebacks ?? '';
+      document.getElementById('merchant-panel').classList.remove('d-none');
+    });
     tbody.appendChild(row);
   });
   updateDashboardMerchants(merchants);
@@ -747,6 +876,11 @@ async function loadProcessors() {
   const select = document.getElementById('lead-processor');
   if (select) {
     select.innerHTML = '<option value="">Select...</option>' +
+      processors.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+  }
+  const merchantSelect = document.getElementById('merchant-processor');
+  if (merchantSelect) {
+    merchantSelect.innerHTML = '<option value="">Select...</option>' +
       processors.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
   }
 }
@@ -798,6 +932,44 @@ document.getElementById('show-add-processor').addEventListener('click', () => {
 document.getElementById('cancel-processor').addEventListener('click', () => {
   document.getElementById('processor-panel').classList.add('d-none');
   document.getElementById('delete-processor').classList.add('d-none');
+});
+
+document.getElementById('show-add-merchant').addEventListener('click', () => {
+  const form = document.getElementById('merchant-form');
+  form.reset();
+  delete form.dataset.id;
+  loadProcessors();
+  document.getElementById('merchant-panel').classList.remove('d-none');
+});
+document.getElementById('cancel-merchant').addEventListener('click', () => {
+  document.getElementById('merchant-panel').classList.add('d-none');
+});
+
+document.getElementById('merchant-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const data = Object.fromEntries(formData.entries());
+  if (data.mtdVolume) data.mtdVolume = Number(data.mtdVolume);
+  if (data.daily) data.daily = Number(data.daily);
+  if (data.weekly) data.weekly = Number(data.weekly);
+  if (data.ytd) data.ytd = Number(data.ytd);
+  if (data.residualSplit) data.residualSplit = Number(data.residualSplit);
+  if (data.transactionFee) data.transactionFee = Number(data.transactionFee);
+  if (data.authorizationFee) data.authorizationFee = Number(data.authorizationFee);
+  if (data.residuals) data.residuals = Number(data.residuals);
+  if (data.chargebacks) data.chargebacks = Number(data.chargebacks);
+  const payload = { ...data, volume: { daily: data.daily || 0, weekly: data.weekly || 0, ytd: data.ytd || 0 } };
+  delete payload.daily; delete payload.weekly; delete payload.ytd;
+  const id = e.target.dataset.id;
+  const method = id ? 'PATCH' : 'POST';
+  const url = id ? `/api/merchants/${id}` : '/api/merchants';
+  await fetch(url, {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  document.getElementById('merchant-panel').classList.add('d-none');
+  loadMerchants();
 });
 
 document.getElementById('lead-form').addEventListener('submit', async (e) => {
