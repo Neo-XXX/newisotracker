@@ -867,6 +867,13 @@ document.getElementById('delete-processor').addEventListener('click', async () =
 loadLeads();
 loadMerchants();
 loadProcessors();
+
+// Periodically refresh data every 15 seconds to keep the dashboard in sync
+setInterval(() => {
+  loadLeads();
+  loadMerchants();
+  loadProcessors();
+}, 15000);
 </script>
 </body>
 </html>
