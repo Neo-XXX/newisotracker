@@ -103,7 +103,7 @@
     }
 
     .lead-item {
-      cursor: pointer;
+      cursor: grab;
       background-color: #fff;
       border: 1px solid #e5e7eb;
       border-left-width: 6px;
@@ -115,6 +115,15 @@
 
     .lead-item:hover {
       background-color: #f3f4f6;
+    }
+
+    .lead-item.dragging {
+      opacity: 0.5;
+      cursor: grabbing;
+    }
+
+    .drop-target.drag-over {
+      background-color: #e0f2fe;
     }
   </style>
 </head>
@@ -366,15 +375,20 @@ function updateDashboardMerchants(merchants) {
       if (!ul) return;
       const li = document.createElement('li');
       li.className = 'list-group-item lead-item';
-      const rev = l.revenueYearly ? `$${l.revenueYearly}` : '';
+      const revText = l.revenueYearly ? `Rev: $${l.revenueYearly}` : '';
       const imp = l.importance || 'medium';
-      li.innerHTML = `<div>${l.name}</div><div class="text-muted small">${rev} ${imp}</div>`;
+      const summaryText = [revText, imp].filter(Boolean).join(' | ');
+      li.innerHTML = `<div>${l.name}</div><div class="text-muted small">${summaryText}</div>`;
       li.draggable = true;
       li.dataset.id = l._id;
       li.style.borderLeftColor = importanceColors[l.importance] || colorFor(l.name || '');
 
       li.addEventListener('dragstart', e => {
         e.dataTransfer.setData('text/plain', l._id);
+        li.classList.add('dragging');
+      });
+      li.addEventListener('dragend', () => {
+        li.classList.remove('dragging');
       });
 
       li.addEventListener('click', () => {
@@ -406,9 +420,17 @@ function updateDashboardMerchants(merchants) {
     });
 
     Object.entries(stageMap).forEach(([status, ul]) => {
-      ul.addEventListener('dragover', e => e.preventDefault());
+      ul.classList.add('drop-target');
+      ul.addEventListener('dragover', e => {
+        e.preventDefault();
+        ul.classList.add('drag-over');
+      });
+      ul.addEventListener('dragleave', () => {
+        ul.classList.remove('drag-over');
+      });
       ul.addEventListener('drop', async e => {
         e.preventDefault();
+        ul.classList.remove('drag-over');
         const id = e.dataTransfer.getData('text/plain');
         if (!id) return;
         await fetch(`/api/leads/${id}`, {
@@ -416,7 +438,7 @@ function updateDashboardMerchants(merchants) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status })
         });
-        loadLeads();
+        await loadLeads();
       });
     });
 
