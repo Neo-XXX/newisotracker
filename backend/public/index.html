@@ -133,7 +133,7 @@
       background-color: #e0f2fe;
     }
 
-    #lead-metrics .gauge-container {
+    .gauge-container {
       width: 110px;
     }
 
@@ -220,54 +220,51 @@
           <h2>Leads</h2>
           <button id="show-add-lead" class="btn btn-primary mb-3">Add Lead</button>
 
-          <div id="lead-metrics" class="d-flex flex-wrap justify-content-start gap-5 mb-3">
-            <div class="gauge-container position-relative text-center">
-              <canvas id="gauge-document-upload" width="100" height="100"></canvas>
-              <div class="gauge-percentage position-absolute top-50 start-50 translate-middle"></div>
-              <div class="small mt-1" id="label-document-upload"></div>
-            </div>
-            <div class="gauge-container position-relative text-center">
-              <canvas id="gauge-application" width="100" height="100"></canvas>
-              <div class="gauge-percentage position-absolute top-50 start-50 translate-middle"></div>
-              <div class="small mt-1" id="label-application"></div>
-            </div>
-            <div class="gauge-container position-relative text-center">
-              <canvas id="gauge-pending" width="100" height="100"></canvas>
-              <div class="gauge-percentage position-absolute top-50 start-50 translate-middle"></div>
-              <div class="small mt-1" id="label-pending"></div>
-            </div>
-            <div class="gauge-container position-relative text-center">
-              <canvas id="gauge-cancelled" width="100" height="100"></canvas>
-              <div class="gauge-percentage position-absolute top-50 start-50 translate-middle"></div>
-              <div class="small mt-1" id="label-cancelled"></div>
-            </div>
-            <div class="gauge-container position-relative text-center">
-              <canvas id="gauge-approved" width="100" height="100"></canvas>
-              <div class="gauge-percentage position-absolute top-50 start-50 translate-middle"></div>
-              <div class="small mt-1" id="label-approved"></div>
-            </div>
-          </div>
-
           <div id="lead-interface" class="d-flex gap-3">
             <div id="lead-stages-container" class="flex-grow-1">
               <div class="row text-center" id="lead-stages">
-                <div class="col">
+                <div class="col d-flex flex-column align-items-center">
+                  <div class="gauge-container position-relative text-center mb-2">
+                    <canvas id="gauge-document-upload" width="100" height="100"></canvas>
+                    <div class="gauge-percentage position-absolute top-50 start-50 translate-middle"></div>
+                    <div class="small mt-1" id="label-document-upload"></div>
+                  </div>
                   <h5>Document Upload</h5>
                   <ul class="list-group" id="stage-document-upload"></ul>
                 </div>
-                <div class="col">
+                <div class="col d-flex flex-column align-items-center">
+                  <div class="gauge-container position-relative text-center mb-2">
+                    <canvas id="gauge-application" width="100" height="100"></canvas>
+                    <div class="gauge-percentage position-absolute top-50 start-50 translate-middle"></div>
+                    <div class="small mt-1" id="label-application"></div>
+                  </div>
                   <h5>Application</h5>
                   <ul class="list-group" id="stage-application"></ul>
                 </div>
-                <div class="col">
+                <div class="col d-flex flex-column align-items-center">
+                  <div class="gauge-container position-relative text-center mb-2">
+                    <canvas id="gauge-pending" width="100" height="100"></canvas>
+                    <div class="gauge-percentage position-absolute top-50 start-50 translate-middle"></div>
+                    <div class="small mt-1" id="label-pending"></div>
+                  </div>
                   <h5>Pending</h5>
                   <ul class="list-group" id="stage-pending"></ul>
                 </div>
-                <div class="col">
+                <div class="col d-flex flex-column align-items-center">
+                  <div class="gauge-container position-relative text-center mb-2">
+                    <canvas id="gauge-cancelled" width="100" height="100"></canvas>
+                    <div class="gauge-percentage position-absolute top-50 start-50 translate-middle"></div>
+                    <div class="small mt-1" id="label-cancelled"></div>
+                  </div>
                   <h5>Cancelled</h5>
                   <ul class="list-group" id="stage-cancelled"></ul>
                 </div>
-                <div class="col">
+                <div class="col d-flex flex-column align-items-center">
+                  <div class="gauge-container position-relative text-center mb-2">
+                    <canvas id="gauge-approved" width="100" height="100"></canvas>
+                    <div class="gauge-percentage position-absolute top-50 start-50 translate-middle"></div>
+                    <div class="small mt-1" id="label-approved"></div>
+                  </div>
                   <h5>Approved</h5>
                   <ul class="list-group" id="stage-approved"></ul>
                 </div>
