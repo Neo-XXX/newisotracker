@@ -82,6 +82,10 @@
     .lead-item {
       cursor: pointer;
     }
+
+    .lead-item:hover {
+      background-color: #f3f4f6;
+    }
   </style>
 </head>
 <body>
@@ -269,12 +273,14 @@ function updateDashboardLeads(leads) {
   const list = document.getElementById('dashboard-active-leads');
   if (!list) return;
   list.innerHTML = '';
-  leads.filter(l => l.status !== 'cancelled' && l.status !== 'approved').forEach(l => {
-    const li = document.createElement('li');
-    li.className = 'list-group-item';
-    li.textContent = l.name;
-    list.appendChild(li);
-  });
+  leads
+    .filter(l => l.status !== 'cancelled' && l.status !== 'approved')
+    .forEach(l => {
+      const li = document.createElement('li');
+      li.className = 'list-group-item d-flex justify-content-between';
+      li.innerHTML = `<span>${l.name}</span><span class="text-muted">${l.status}</span>`;
+      list.appendChild(li);
+    });
 }
 
 function updateDashboardMerchants(merchants) {
