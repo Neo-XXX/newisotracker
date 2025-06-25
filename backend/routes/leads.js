@@ -28,7 +28,10 @@ router.post('/', async (req, res) => {
           name: lead.name,
           email: lead.email,
           agent: lead.agent,
-          nmiApiKey: lead.nmiApiKey
+          nmiApiKey: lead.nmiApiKey,
+          transactionFee: lead.transactionFee,
+          authorizationFee: lead.authorizationFee,
+          pricingModel: lead.pricingModel
         };
         req.app.locals.memoryMerchants.push(merchant);
       }
@@ -47,7 +50,10 @@ router.post('/', async (req, res) => {
           name: lead.name,
           email: lead.email,
           agent: lead.agent,
-          nmiApiKey: lead.nmiApiKey
+          nmiApiKey: lead.nmiApiKey,
+          transactionFee: lead.transactionFee,
+          authorizationFee: lead.authorizationFee,
+          pricingModel: lead.pricingModel
         });
         await merchant.save();
       }
@@ -74,7 +80,10 @@ router.patch('/:id', async (req, res) => {
           name: lead.name,
           email: lead.email,
           agent: lead.agent,
-          nmiApiKey: lead.nmiApiKey
+          nmiApiKey: lead.nmiApiKey,
+          transactionFee: lead.transactionFee,
+          authorizationFee: lead.authorizationFee,
+          pricingModel: lead.pricingModel
         };
         req.app.locals.memoryMerchants.push(merchant);
       }
@@ -92,7 +101,10 @@ router.patch('/:id', async (req, res) => {
           name: lead.name,
           email: lead.email,
           agent: lead.agent,
-          nmiApiKey: lead.nmiApiKey
+          nmiApiKey: lead.nmiApiKey,
+          transactionFee: lead.transactionFee,
+          authorizationFee: lead.authorizationFee,
+          pricingModel: lead.pricingModel
         });
         await merchant.save();
       }

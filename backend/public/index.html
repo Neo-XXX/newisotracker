@@ -374,6 +374,22 @@
                           <label class="form-label">NMI API Key</label>
                           <input id="lead-nmi-api-key" class="form-control" name="nmiApiKey">
                         </div>
+                        <div class="col-md-4">
+                          <label class="form-label">Transaction Fee</label>
+                          <input type="number" step="0.01" id="lead-transaction-fee" class="form-control" name="transactionFee">
+                        </div>
+                        <div class="col-md-4">
+                          <label class="form-label">Authorization Fee</label>
+                          <input type="number" step="0.01" id="lead-authorization-fee" class="form-control" name="authorizationFee">
+                        </div>
+                        <div class="col-md-4">
+                          <label class="form-label">Pricing Model</label>
+                          <select id="lead-pricing-model" class="form-select" name="pricingModel">
+                            <option value="Flat Rate">Flat Rate</option>
+                            <option value="Interchange Plus">Interchange Plus</option>
+                            <option value="Tiered">Tiered</option>
+                          </select>
+                        </div>
                         <div class="col-md-4 d-flex align-items-center">
                           <div class="form-check ms-2">
                             <input class="form-check-input" type="checkbox" id="lead-transacting" name="transacting">
@@ -409,7 +425,10 @@
         <h2>Merchants</h2>
         <table class="table table-hover" id="merchants-table">
           <thead class="table-light">
-            <tr><th>Name</th><th>MID#</th><th>MCC</th><th>MTD Volume</th><th>Agent</th></tr>
+            <tr>
+              <th>Name</th><th>MID#</th><th>MCC</th><th>MTD Volume</th><th>Agent</th>
+              <th>Trans Fee</th><th>Auth Fee</th><th>Pricing</th>
+            </tr>
           </thead>
           <tbody></tbody>
         </table>
@@ -562,6 +581,9 @@ function updateDashboardMerchants(merchants) {
         document.getElementById('lead-underwriting-status').value = l.underwritingStatus || '';
         document.getElementById('lead-var-sheet-uploaded').checked = !!l.varSheetUploaded;
         document.getElementById('lead-nmi-api-key').value = l.nmiApiKey || '';
+        document.getElementById('lead-transaction-fee').value = l.transactionFee || '';
+        document.getElementById('lead-authorization-fee').value = l.authorizationFee || '';
+        document.getElementById('lead-pricing-model').value = l.pricingModel || 'Flat Rate';
         document.getElementById('lead-transacting').checked = !!l.transacting;
         document.getElementById('lead-residuals-uploaded').checked = !!l.residualsUploaded;
         document.getElementById('lead-residual-audit-status').value = l.residualAuditStatus || '';
@@ -613,7 +635,15 @@ async function loadMerchants() {
   tbody.innerHTML = '';
   merchants.filter(m => m.status === 'approved').forEach(m => {
     const row = document.createElement('tr');
-    row.innerHTML = `<td>${m.name}</td><td>${m.mid || ''}</td><td>${m.mcc || ''}</td><td>${m.mtdVolume || 0}</td><td>${m.agent || ''}</td>`;
+    row.innerHTML = `
+      <td>${m.name}</td>
+      <td>${m.mid || ''}</td>
+      <td>${m.mcc || ''}</td>
+      <td>${m.mtdVolume || 0}</td>
+      <td>${m.agent || ''}</td>
+      <td>${m.transactionFee ?? ''}</td>
+      <td>${m.authorizationFee ?? ''}</td>
+      <td>${m.pricingModel || ''}</td>`;
     tbody.appendChild(row);
   });
   updateDashboardMerchants(merchants);
@@ -639,6 +669,9 @@ document.getElementById('show-add-lead').addEventListener('click', () => {
   document.getElementById('lead-docs-uploaded').checked = false;
   document.getElementById('lead-application-signed').checked = false;
   document.getElementById('lead-var-sheet-uploaded').checked = false;
+  document.getElementById('lead-transaction-fee').value = '';
+  document.getElementById('lead-authorization-fee').value = '';
+  document.getElementById('lead-pricing-model').value = 'Flat Rate';
   document.getElementById('lead-transacting').checked = false;
   document.getElementById('lead-residuals-uploaded').checked = false;
     document.getElementById("lead-panel").classList.remove("d-none");
@@ -653,6 +686,8 @@ document.getElementById('lead-form').addEventListener('submit', async (e) => {
   const formData = new FormData(e.target);
   const data = Object.fromEntries(formData.entries());
   if (data.revenueYearly) data.revenueYearly = Number(data.revenueYearly);
+  if (data.transactionFee) data.transactionFee = Number(data.transactionFee);
+  if (data.authorizationFee) data.authorizationFee = Number(data.authorizationFee);
   data.docsUploaded = document.getElementById('lead-docs-uploaded').checked;
   data.applicationSigned = document.getElementById('lead-application-signed').checked;
   data.varSheetUploaded = document.getElementById('lead-var-sheet-uploaded').checked;

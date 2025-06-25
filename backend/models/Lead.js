@@ -24,6 +24,12 @@ const leadSchema = new mongoose.Schema({
   underwritingStatus: String,
   varSheetUploaded: { type: Boolean, default: false },
   nmiApiKey: String,
+  transactionFee: Number,
+  authorizationFee: Number,
+  pricingModel: {
+    type: String,
+    enum: ['Flat Rate', 'Interchange Plus', 'Tiered']
+  },
   transacting: { type: Boolean, default: false },
   approved: { type: Boolean, default: false }
 }, { timestamps: true });
