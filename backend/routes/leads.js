@@ -101,4 +101,18 @@ router.patch('/:id', async (req, res) => {
   }
 });
 
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  if (req.app.locals.useMemoryDB) {
+    const leads = req.app.locals.memoryLeads;
+    const index = leads.findIndex(l => l._id === id);
+    if (index === -1) return res.status(404).json({ error: 'Not found' });
+    leads.splice(index, 1);
+    res.json({ message: 'Deleted' });
+  } else {
+    await Lead.findByIdAndDelete(id);
+    res.json({ message: 'Deleted' });
+  }
+});
+
 export default router;

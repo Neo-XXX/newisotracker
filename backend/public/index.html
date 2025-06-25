@@ -121,6 +121,8 @@
       border-left-width: 6px;
       border-radius: 6px;
       width: 100%;
+      box-sizing: border-box;
+      word-break: break-word;
       display: flex;
       flex-direction: column;
       padding: 6px;
@@ -395,6 +397,7 @@
                     </div>
                   <div class="mt-3 text-end">
                     <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                    <button type="button" id="delete-lead" class="btn btn-danger btn-sm d-none">Delete</button>
                     <button type="button" id="cancel-lead" class="btn btn-secondary btn-sm">Cancel</button>
                   </div>
                 </form>
@@ -542,6 +545,7 @@ function updateDashboardMerchants(merchants) {
         currentLead = l._id;
         const form = document.getElementById('lead-form');
         form.dataset.id = l._id;
+        document.getElementById('delete-lead').classList.remove('d-none');
         document.getElementById('lead-name').value = l.name || '';
         document.getElementById('lead-email').value = l.email || '';
         document.getElementById('lead-phone').value = l.phone || '';
@@ -628,6 +632,7 @@ document.getElementById('show-add-lead').addEventListener('click', () => {
   const form = document.getElementById('lead-form');
   form.reset();
   delete form.dataset.id;
+  document.getElementById('delete-lead').classList.add('d-none');
   document.getElementById('lead-status').value = 'document upload';
   document.getElementById('lead-importance').value = 'medium';
   document.getElementById('lead-docs-uploaded').checked = false;
@@ -637,7 +642,10 @@ document.getElementById('show-add-lead').addEventListener('click', () => {
   document.getElementById('lead-residuals-uploaded').checked = false;
     document.getElementById("lead-panel").classList.remove("d-none");
 });
-document.getElementById("cancel-lead").addEventListener("click", () => document.getElementById("lead-panel").classList.add("d-none"));
+document.getElementById("cancel-lead").addEventListener("click", () => {
+  document.getElementById("lead-panel").classList.add("d-none");
+  document.getElementById('delete-lead').classList.add('d-none');
+});
 
 document.getElementById('lead-form').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -658,7 +666,17 @@ document.getElementById('lead-form').addEventListener('submit', async (e) => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   });
-    document.getElementById("lead-panel").classList.add("d-none");
+  document.getElementById("lead-panel").classList.add("d-none");
+  document.getElementById('delete-lead').classList.add('d-none');
+  loadLeads();
+});
+
+document.getElementById('delete-lead').addEventListener('click', async () => {
+  if (!currentLead) return;
+  if (!confirm('Delete this lead?')) return;
+  await fetch(`/api/leads/${currentLead}`, { method: 'DELETE' });
+  document.getElementById('lead-panel').classList.add('d-none');
+  document.getElementById('delete-lead').classList.add('d-none');
   loadLeads();
 });
 
