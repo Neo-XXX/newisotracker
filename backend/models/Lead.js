@@ -18,7 +18,7 @@ const leadSchema = new mongoose.Schema({
     enum: ['document upload', 'application', 'pending', 'cancelled', 'approved'],
     default: 'document upload'
   },
-  acquiringBank: String,
+  processor: String,
   docsUploaded: { type: Boolean, default: false },
   applicationSigned: { type: Boolean, default: false },
   underwritingStatus: String,
@@ -31,6 +31,9 @@ const leadSchema = new mongoose.Schema({
     enum: ['Flat Rate', 'Interchange Plus', 'Tiered']
   },
   transacting: { type: Boolean, default: false },
+  residualsUploaded: { type: Boolean, default: false },
+  residualAuditStatus: String,
+  chargebacks: Number,
   approved: { type: Boolean, default: false }
 }, { timestamps: true });
 
