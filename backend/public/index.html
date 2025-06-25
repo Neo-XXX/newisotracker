@@ -132,6 +132,15 @@
       background-color: #e0f2fe;
     }
 
+    #lead-metrics .gauge-container {
+      width: 110px;
+    }
+
+    .gauge-percentage {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
     #lead-modal .modal-dialog {
       max-width: 800px;
     }
@@ -187,25 +196,30 @@
           <h2>Leads</h2>
           <button id="show-add-lead" class="btn btn-primary mb-3">Add Lead</button>
 
-          <div id="lead-metrics" class="d-flex flex-wrap justify-content-center gap-4 mb-3">
-            <div class="text-center">
-              <canvas id="gauge-document-upload" width="80" height="80"></canvas>
+          <div id="lead-metrics" class="d-flex flex-wrap justify-content-start gap-5 mb-3">
+            <div class="gauge-container position-relative text-center">
+              <canvas id="gauge-document-upload" width="100" height="100"></canvas>
+              <div class="gauge-percentage position-absolute top-50 start-50 translate-middle"></div>
               <div class="small mt-1" id="label-document-upload"></div>
             </div>
-            <div class="text-center">
-              <canvas id="gauge-application" width="80" height="80"></canvas>
+            <div class="gauge-container position-relative text-center">
+              <canvas id="gauge-application" width="100" height="100"></canvas>
+              <div class="gauge-percentage position-absolute top-50 start-50 translate-middle"></div>
               <div class="small mt-1" id="label-application"></div>
             </div>
-            <div class="text-center">
-              <canvas id="gauge-pending" width="80" height="80"></canvas>
+            <div class="gauge-container position-relative text-center">
+              <canvas id="gauge-pending" width="100" height="100"></canvas>
+              <div class="gauge-percentage position-absolute top-50 start-50 translate-middle"></div>
               <div class="small mt-1" id="label-pending"></div>
             </div>
-            <div class="text-center">
-              <canvas id="gauge-cancelled" width="80" height="80"></canvas>
+            <div class="gauge-container position-relative text-center">
+              <canvas id="gauge-cancelled" width="100" height="100"></canvas>
+              <div class="gauge-percentage position-absolute top-50 start-50 translate-middle"></div>
               <div class="small mt-1" id="label-cancelled"></div>
             </div>
-            <div class="text-center">
-              <canvas id="gauge-approved" width="80" height="80"></canvas>
+            <div class="gauge-container position-relative text-center">
+              <canvas id="gauge-approved" width="100" height="100"></canvas>
+              <div class="gauge-percentage position-absolute top-50 start-50 translate-middle"></div>
               <div class="small mt-1" id="label-approved"></div>
             </div>
           </div>
@@ -397,6 +411,9 @@ function renderLeadMetrics(leads) {
     const count = leads.filter(l => l.status === status).length;
     const canvas = document.getElementById(`gauge-${status.replace(/\s+/g,'-')}`);
     if (!canvas) return;
+    const percent = Math.round((count / total) * 100);
+    const percentElem = canvas.parentElement.querySelector('.gauge-percentage');
+    if (percentElem) percentElem.textContent = percent + '%';
     if (gaugeCharts[status]) gaugeCharts[status].destroy();
     gaugeCharts[status] = new Chart(canvas, {
       type: 'doughnut',
