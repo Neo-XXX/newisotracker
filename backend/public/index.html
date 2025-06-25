@@ -146,14 +146,18 @@
     }
 
     .lead-panel {
-      width: 300px;
-      flex: 0 0 300px;
+      width: 400px;
+      flex: 0 0 400px;
       background: #fff;
       border: 1px solid #e5e7eb;
       border-radius: 8px;
       padding: 10px;
       overflow-y: auto;
-      max-height: 80vh;
+      max-height: 70vh;
+    }
+
+    #lead-stages-container {
+      flex-grow: 0;
     }
 
   </style>
@@ -233,7 +237,7 @@
           </div>
 
           <div id="lead-interface" class="d-flex gap-3 mt-3">
-            <div class="flex-grow-1 overflow-auto">
+            <div id="lead-stages-container" class="flex-grow-1 overflow-auto">
               <div class="row text-center" id="lead-stages">
                 <div class="col">
                   <h5>Document Upload</h5>
