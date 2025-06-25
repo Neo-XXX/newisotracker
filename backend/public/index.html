@@ -85,12 +85,12 @@
 
     #lead-stages {
       display: flex;
+      flex-wrap: wrap;
       gap: 1rem;
-      overflow-x: auto;
     }
 
     #lead-stages .col {
-      flex: 0 0 170px;
+      flex: 1 1 170px;
       background-color: #f9fafb;
       border-radius: 8px;
       padding: 10px;
@@ -146,25 +146,27 @@
     }
 
     .lead-panel {
-      width: 700px;
-      flex: 0 0 700px;
+      width: 100%;
+      max-width: 700px;
+      flex: 1 1 700px;
       background: #fff;
       border: 1px solid #e5e7eb;
       border-radius: 8px;
       padding: 10px;
-      overflow-y: auto;
-      max-height: 70vh;
+      overflow: visible;
       margin-right: 2rem;
-      margin-top: -7rem;
+      margin-top: 0;
     }
 
     #lead-stages-container {
-      flex-grow: 0;
+      flex-grow: 1;
+      overflow: visible;
     }
 
     #lead-interface {
       display: inline-flex !important;
       align-items: flex-start;
+      flex-wrap: wrap;
     }
 
   </style>
@@ -244,7 +246,7 @@
           </div>
 
           <div id="lead-interface" class="d-flex gap-3">
-            <div id="lead-stages-container" class="flex-grow-1 overflow-auto">
+            <div id="lead-stages-container" class="flex-grow-1">
               <div class="row text-center" id="lead-stages">
                 <div class="col">
                   <h5>Document Upload</h5>
