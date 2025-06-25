@@ -36,3 +36,14 @@ uses `dotenv` so values from `.env` are automatically loaded when you run
 ```
 mongodb+srv://iso_user:<db_password>@isoapp.i6ozni3.mongodb.net/?retryWrites=true&w=majority&appName=isoapp
 ```
+
+## Adding a sample merchant
+
+Once your `MONGO_URI` is configured you can insert a test merchant with name and email `"t"` by running the seed script:
+
+```bash
+cd backend
+npm run seed
+```
+
+The script connects to your MongoDB database and creates the merchant if it doesn't already exist.

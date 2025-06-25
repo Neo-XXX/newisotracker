@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 
 const merchantSchema = new mongoose.Schema({
   name: { type: String, required: true },
+  email: String,
   mid: String,
   mcc: String,
   mtdVolume: Number,
