@@ -37,31 +37,33 @@ app.locals.useMemoryDB = true;
 app.locals.memoryLeads = [];
 app.locals.memoryMerchants = [];
 
-if (MONGO_URI && !MONGO_URI.includes('<db_password>')) {
-  mongoose
-    .connect(MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    })
-    .then(() => {
+async function connectAndStart() {
+  if (MONGO_URI && !MONGO_URI.includes('<db_password>')) {
+    try {
+      await mongoose.connect(MONGO_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
       console.log('Connected to MongoDB');
       app.locals.useMemoryDB = false;
-    })
-    .catch((err) => {
+    } catch (err) {
       console.error(
         'Failed to connect to MongoDB, using in-memory store:',
         err.message
       );
+    }
+  } else {
+    console.log('No valid MongoDB connection string provided. Using in-memory store.');
+  }
+
+  if (!process.env.VERCEL) {
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
     });
-} else {
-  console.log('No valid MongoDB connection string provided. Using in-memory store.');
+  }
 }
 
-if (!process.env.VERCEL) {
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-}
+await connectAndStart();
 
 export default app;
