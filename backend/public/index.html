@@ -187,6 +187,29 @@
           <h2>Leads</h2>
           <button id="show-add-lead" class="btn btn-primary mb-3">Add Lead</button>
 
+          <div id="lead-metrics" class="d-flex flex-wrap justify-content-center gap-4 mb-3">
+            <div class="text-center">
+              <canvas id="gauge-document-upload" width="80" height="80"></canvas>
+              <div class="small mt-1" id="label-document-upload"></div>
+            </div>
+            <div class="text-center">
+              <canvas id="gauge-application" width="80" height="80"></canvas>
+              <div class="small mt-1" id="label-application"></div>
+            </div>
+            <div class="text-center">
+              <canvas id="gauge-pending" width="80" height="80"></canvas>
+              <div class="small mt-1" id="label-pending"></div>
+            </div>
+            <div class="text-center">
+              <canvas id="gauge-cancelled" width="80" height="80"></canvas>
+              <div class="small mt-1" id="label-cancelled"></div>
+            </div>
+            <div class="text-center">
+              <canvas id="gauge-approved" width="80" height="80"></canvas>
+              <div class="small mt-1" id="label-approved"></div>
+            </div>
+          </div>
+
           <!-- Lead Modal -->
           <div class="modal fade" id="lead-modal" tabindex="-1">
             <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -346,6 +369,7 @@
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 const leadColors = ['#fef3c7','#e0f2fe','#ede9fe','#dcfce7','#ffe4e6','#f3e8ff'];
@@ -357,6 +381,34 @@ function colorFor(name) {
   return leadColors[Math.abs(hash) % leadColors.length];
 }
 const importanceColors = { high: '#fecaca', medium: '#fef9c3', low: '#d1fae5' };
+const gaugeColors = {
+  'document upload': '#6366f1',
+  'application': '#10b981',
+  'pending': '#f59e0b',
+  'cancelled': '#ef4444',
+  'approved': '#3b82f6'
+};
+const gaugeCharts = {};
+
+function renderLeadMetrics(leads) {
+  const total = leads.length || 1;
+  const statuses = Object.keys(gaugeColors);
+  statuses.forEach(status => {
+    const count = leads.filter(l => l.status === status).length;
+    const canvas = document.getElementById(`gauge-${status.replace(/\s+/g,'-')}`);
+    if (!canvas) return;
+    if (gaugeCharts[status]) gaugeCharts[status].destroy();
+    gaugeCharts[status] = new Chart(canvas, {
+      type: 'doughnut',
+      data: {
+        datasets: [{ data: [count, total - count], backgroundColor: [gaugeColors[status], '#e5e7eb'], borderWidth: 0 }]
+      },
+      options: { cutout: '70%', responsive: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+    });
+    const label = document.getElementById(`label-${status.replace(/\s+/g,'-')}`);
+    if (label) label.textContent = `${status}: ${count}`;
+  });
+}
 function updateDashboardLeads(leads) {
   const list = document.getElementById('dashboard-active-leads');
   if (!list) return;
@@ -490,10 +542,12 @@ function updateDashboardMerchants(merchants) {
         const moved = leadsData.find(l => l._id === id);
         if (moved) moved.status = status;
         updateDashboardLeads(leadsData);
+        renderLeadMetrics(leadsData);
       });
     });
 
     updateDashboardLeads(leadsData);
+    renderLeadMetrics(leadsData);
   }
 
 async function loadMerchants() {
