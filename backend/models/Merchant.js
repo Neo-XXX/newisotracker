@@ -6,6 +6,11 @@ const merchantSchema = new mongoose.Schema({
   mid: String,
   mcc: String,
   mtdVolume: Number,
+  volume: {
+    daily: { type: Number, default: 0 },
+    weekly: { type: Number, default: 0 },
+    ytd: { type: Number, default: 0 }
+  },
   processor: String,
   status: String,
   agent: String,
