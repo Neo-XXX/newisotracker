@@ -19,9 +19,7 @@ const leadSchema = new mongoose.Schema({
   varSheetUploaded: { type: Boolean, default: false },
   nmiApiKey: String,
   transacting: { type: Boolean, default: false },
-  residualsUploaded: { type: Boolean, default: false },
-  residualAuditStatus: String,
-  chargebacks: { type: Number, default: 0 }
+  approved: { type: Boolean, default: false }
 }, { timestamps: true });
 
 export default mongoose.model('Lead', leadSchema);

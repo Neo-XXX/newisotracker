@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import Lead from '../models/Lead.js';
+import Merchant from '../models/Merchant.js';
 
 const router = express.Router();
 
@@ -17,10 +18,40 @@ router.post('/', async (req, res) => {
   if (req.app.locals.useMemoryDB) {
     const lead = { _id: new mongoose.Types.ObjectId().toString(), ...req.body };
     req.app.locals.memoryLeads.push(lead);
+    if (lead.approved) {
+      const exists = req.app.locals.memoryMerchants.find(
+        m => m.name === lead.name && m.email === lead.email
+      );
+      if (!exists) {
+        const merchant = {
+          _id: new mongoose.Types.ObjectId().toString(),
+          name: lead.name,
+          email: lead.email,
+          agent: lead.agent,
+          nmiApiKey: lead.nmiApiKey
+        };
+        req.app.locals.memoryMerchants.push(merchant);
+      }
+    }
     res.json(lead);
   } else {
     const lead = new Lead(req.body);
     await lead.save();
+    if (lead.approved) {
+      const exists = await Merchant.findOne({
+        name: lead.name,
+        email: lead.email
+      });
+      if (!exists) {
+        const merchant = new Merchant({
+          name: lead.name,
+          email: lead.email,
+          agent: lead.agent,
+          nmiApiKey: lead.nmiApiKey
+        });
+        await merchant.save();
+      }
+    }
     res.json(lead);
   }
 });
@@ -32,9 +63,40 @@ router.patch('/:id', async (req, res) => {
     const index = leads.findIndex(l => l._id === id);
     if (index === -1) return res.status(404).json({ error: 'Not found' });
     leads[index] = { ...leads[index], ...req.body };
-    res.json(leads[index]);
+    const lead = leads[index];
+    if (lead.approved) {
+      const exists = req.app.locals.memoryMerchants.find(
+        m => m.name === lead.name && m.email === lead.email
+      );
+      if (!exists) {
+        const merchant = {
+          _id: new mongoose.Types.ObjectId().toString(),
+          name: lead.name,
+          email: lead.email,
+          agent: lead.agent,
+          nmiApiKey: lead.nmiApiKey
+        };
+        req.app.locals.memoryMerchants.push(merchant);
+      }
+    }
+    res.json(lead);
   } else {
     const lead = await Lead.findByIdAndUpdate(id, req.body, { new: true });
+    if (lead && lead.approved) {
+      const exists = await Merchant.findOne({
+        name: lead.name,
+        email: lead.email
+      });
+      if (!exists) {
+        const merchant = new Merchant({
+          name: lead.name,
+          email: lead.email,
+          agent: lead.agent,
+          nmiApiKey: lead.nmiApiKey
+        });
+        await merchant.save();
+      }
+    }
     res.json(lead);
   }
 });
