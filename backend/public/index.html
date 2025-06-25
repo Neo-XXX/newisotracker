@@ -103,7 +103,7 @@
     }
 
     .lead-item {
-      cursor: pointer;
+      cursor: grab;
       background-color: #fff;
       border: 1px solid #e5e7eb;
       border-left-width: 6px;
@@ -115,6 +115,15 @@
 
     .lead-item:hover {
       background-color: #f3f4f6;
+    }
+
+    .lead-item.dragging {
+      opacity: 0.5;
+      cursor: grabbing;
+    }
+
+    .drop-target.drag-over {
+      background-color: #e0f2fe;
     }
   </style>
 </head>
@@ -197,6 +206,18 @@
                     <div class="mb-3">
                       <label class="form-label">Agent</label>
                       <input id="lead-agent" class="form-control" name="agent">
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Revenue Yearly</label>
+                      <input type="number" id="lead-revenue-yearly" class="form-control" name="revenueYearly">
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Importance</label>
+                      <select id="lead-importance" class="form-select" name="importance">
+                        <option value="high">High</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="low">Low</option>
+                      </select>
                     </div>
                     <div class="mb-3">
                       <label class="form-label">Status</label>
@@ -307,6 +328,7 @@ function colorFor(name) {
   }
   return leadColors[Math.abs(hash) % leadColors.length];
 }
+const importanceColors = { high: '#fecaca', medium: '#fef9c3', low: '#d1fae5' };
 function updateDashboardLeads(leads) {
   const list = document.getElementById('dashboard-active-leads');
   if (!list) return;
@@ -353,13 +375,20 @@ function updateDashboardMerchants(merchants) {
       if (!ul) return;
       const li = document.createElement('li');
       li.className = 'list-group-item lead-item';
-      li.textContent = l.name;
+      const revText = l.revenueYearly ? `Rev: $${l.revenueYearly}` : '';
+      const imp = l.importance || 'medium';
+      const summary = [revText, imp].filter(Boolean).join(' | ');
+      li.innerHTML = `<div>${l.name}</div><div class="text-muted small">${summary}</div>`;
       li.draggable = true;
       li.dataset.id = l._id;
-      li.style.borderLeftColor = colorFor(l.name || '');
+      li.style.borderLeftColor = importanceColors[l.importance] || colorFor(l.name || '');
 
       li.addEventListener('dragstart', e => {
         e.dataTransfer.setData('text/plain', l._id);
+        li.classList.add('dragging');
+      });
+      li.addEventListener('dragend', () => {
+        li.classList.remove('dragging');
       });
 
       li.addEventListener('click', () => {
@@ -370,6 +399,8 @@ function updateDashboardMerchants(merchants) {
         document.getElementById('lead-source').value = l.source || '';
         document.getElementById('lead-notes').value = l.notes || '';
         document.getElementById('lead-agent').value = l.agent || '';
+        document.getElementById('lead-revenue-yearly').value = l.revenueYearly || '';
+        document.getElementById('lead-importance').value = l.importance || 'medium';
         document.getElementById('lead-status').value = l.status || 'document upload';
         document.getElementById('lead-acquiring-bank').value = l.acquiringBank || '';
         document.getElementById('lead-docs-uploaded').checked = !!l.docsUploaded;
@@ -389,9 +420,17 @@ function updateDashboardMerchants(merchants) {
     });
 
     Object.entries(stageMap).forEach(([status, ul]) => {
-      ul.addEventListener('dragover', e => e.preventDefault());
+      ul.classList.add('drop-target');
+      ul.addEventListener('dragover', e => {
+        e.preventDefault();
+        ul.classList.add('drag-over');
+      });
+      ul.addEventListener('dragleave', () => {
+        ul.classList.remove('drag-over');
+      });
       ul.addEventListener('drop', async e => {
         e.preventDefault();
+        ul.classList.remove('drag-over');
         const id = e.dataTransfer.getData('text/plain');
         if (!id) return;
         await fetch(`/api/leads/${id}`, {
@@ -434,6 +473,7 @@ document.getElementById('show-add-lead').addEventListener('click', () => {
   form.reset();
   delete form.dataset.id;
   document.getElementById('lead-status').value = 'document upload';
+  document.getElementById('lead-importance').value = 'medium';
   document.getElementById('lead-docs-uploaded').checked = false;
   document.getElementById('lead-application-signed').checked = false;
   document.getElementById('lead-var-sheet-uploaded').checked = false;
@@ -446,6 +486,7 @@ document.getElementById('lead-modal-form').addEventListener('submit', async (e) 
   e.preventDefault();
   const formData = new FormData(e.target);
   const data = Object.fromEntries(formData.entries());
+  if (data.revenueYearly) data.revenueYearly = Number(data.revenueYearly);
   data.docsUploaded = document.getElementById('lead-docs-uploaded').checked;
   data.applicationSigned = document.getElementById('lead-application-signed').checked;
   data.varSheetUploaded = document.getElementById('lead-var-sheet-uploaded').checked;

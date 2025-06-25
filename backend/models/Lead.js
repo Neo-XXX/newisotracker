@@ -7,6 +7,12 @@ const leadSchema = new mongoose.Schema({
   source: String,
   notes: String,
   agent: String,
+  revenueYearly: Number,
+  importance: {
+    type: String,
+    enum: ['high', 'medium', 'low'],
+    default: 'medium'
+  },
   status: {
     type: String,
     enum: ['document upload', 'application', 'pending', 'cancelled', 'approved'],
