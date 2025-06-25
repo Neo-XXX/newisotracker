@@ -83,15 +83,34 @@
       border-top: 1px solid #e5e7eb;
     }
 
+    #lead-stages {
+      display: flex;
+      gap: 1rem;
+      overflow-x: auto;
+    }
+
     #lead-stages .col {
-      background-color: #ffffff;
-      border: 1px solid #e5e7eb;
+      flex: 0 0 230px;
+      background-color: #f9fafb;
       border-radius: 8px;
       padding: 10px;
+      border: 1px solid #e5e7eb;
+    }
+
+    #lead-stages .col h5 {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
     }
 
     .lead-item {
       cursor: pointer;
+      background-color: #fff;
+      border: 1px solid #e5e7eb;
+      border-left-width: 6px;
+      border-radius: 6px;
+      padding: 6px;
+      margin-bottom: 8px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
 
     .lead-item:hover {
@@ -280,6 +299,14 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+const leadColors = ['#fef3c7','#e0f2fe','#ede9fe','#dcfce7','#ffe4e6','#f3e8ff'];
+function colorFor(name) {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return leadColors[Math.abs(hash) % leadColors.length];
+}
 function updateDashboardLeads(leads) {
   const list = document.getElementById('dashboard-active-leads');
   if (!list) return;
@@ -329,6 +356,7 @@ function updateDashboardMerchants(merchants) {
       li.textContent = l.name;
       li.draggable = true;
       li.dataset.id = l._id;
+      li.style.borderLeftColor = colorFor(l.name || '');
 
       li.addEventListener('dragstart', e => {
         e.dataTransfer.setData('text/plain', l._id);
