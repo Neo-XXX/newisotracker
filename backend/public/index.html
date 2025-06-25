@@ -346,8 +346,8 @@
                           </select>
                         </div>
                         <div class="col-md-4">
-                          <label class="form-label">Acquiring Bank</label>
-                          <input id="lead-acquiring-bank" class="form-control" name="acquiringBank">
+                          <label class="form-label">Processor</label>
+                          <select id="lead-processor" class="form-select" name="processor"></select>
                         </div>
                         <div class="col-md-4 d-flex align-items-center">
                           <div class="form-check ms-2">
@@ -395,6 +395,12 @@
                           <div class="form-check ms-2">
                             <input class="form-check-input" type="checkbox" id="lead-transacting" name="transacting">
                             <label class="form-check-label" for="lead-transacting">Transacting</label>
+                          </div>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-center">
+                          <div class="form-check ms-2">
+                            <input class="form-check-input" type="checkbox" id="lead-approved" name="approved">
+                            <label class="form-check-label" for="lead-approved">Approved</label>
                           </div>
                         </div>
                         <div class="col-md-4 d-flex align-items-center">
@@ -587,7 +593,7 @@ function updateDashboardMerchants(merchants) {
         document.getElementById('lead-revenue-yearly').value = l.revenueYearly || '';
         document.getElementById('lead-importance').value = l.importance || 'medium';
         document.getElementById('lead-status').value = l.status || 'document upload';
-        document.getElementById('lead-acquiring-bank').value = l.acquiringBank || '';
+        document.getElementById('lead-processor').value = l.processor || '';
         document.getElementById('lead-docs-uploaded').checked = !!l.docsUploaded;
         document.getElementById('lead-application-signed').checked = !!l.applicationSigned;
         document.getElementById('lead-underwriting-status').value = l.underwritingStatus || '';
@@ -597,6 +603,7 @@ function updateDashboardMerchants(merchants) {
         document.getElementById('lead-authorization-fee').value = l.authorizationFee || '';
         document.getElementById('lead-pricing-model').value = l.pricingModel || 'Flat Rate';
         document.getElementById('lead-transacting').checked = !!l.transacting;
+        document.getElementById('lead-approved').checked = !!l.approved;
         document.getElementById('lead-residuals-uploaded').checked = !!l.residualsUploaded;
         document.getElementById('lead-residual-audit-status').value = l.residualAuditStatus || '';
         document.getElementById('lead-chargebacks').value = l.chargebacks || '';
@@ -677,6 +684,11 @@ async function loadProcessors() {
       <td>${p.notes || ''}</td>`;
     tbody.appendChild(row);
   });
+  const select = document.getElementById('lead-processor');
+  if (select) {
+    select.innerHTML = '<option value="">Select...</option>' +
+      processors.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+  }
 }
 
 document.querySelectorAll('#sidebar .nav-link').forEach(link => {
@@ -694,6 +706,7 @@ document.getElementById('show-add-lead').addEventListener('click', () => {
   form.reset();
   delete form.dataset.id;
   document.getElementById('delete-lead').classList.add('d-none');
+  loadProcessors();
   document.getElementById('lead-status').value = 'document upload';
   document.getElementById('lead-importance').value = 'medium';
   document.getElementById('lead-docs-uploaded').checked = false;
@@ -704,7 +717,11 @@ document.getElementById('show-add-lead').addEventListener('click', () => {
   document.getElementById('lead-pricing-model').value = 'Flat Rate';
   document.getElementById('lead-transacting').checked = false;
   document.getElementById('lead-residuals-uploaded').checked = false;
-    document.getElementById("lead-panel").classList.remove("d-none");
+  document.getElementById('lead-processor').value = '';
+  document.getElementById('lead-approved').checked = false;
+  document.getElementById('lead-residual-audit-status').value = '';
+  document.getElementById('lead-chargebacks').value = '';
+  document.getElementById("lead-panel").classList.remove("d-none");
 });
 document.getElementById("cancel-lead").addEventListener("click", () => {
   document.getElementById("lead-panel").classList.add("d-none");
@@ -722,6 +739,8 @@ document.getElementById('lead-form').addEventListener('submit', async (e) => {
   data.applicationSigned = document.getElementById('lead-application-signed').checked;
   data.varSheetUploaded = document.getElementById('lead-var-sheet-uploaded').checked;
   data.transacting = document.getElementById('lead-transacting').checked;
+  data.processor = document.getElementById('lead-processor').value || '';
+  data.approved = document.getElementById('lead-approved').checked;
   data.residualsUploaded = document.getElementById('lead-residuals-uploaded').checked;
   if (data.chargebacks) data.chargebacks = Number(data.chargebacks);
   const id = e.target.dataset.id;
