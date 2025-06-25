@@ -39,4 +39,18 @@ router.patch('/:id', async (req, res) => {
   }
 });
 
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  if (req.app.locals.useMemoryDB) {
+    const processors = req.app.locals.memoryProcessors;
+    const index = processors.findIndex(p => p._id === id);
+    if (index === -1) return res.status(404).json({ error: 'Not found' });
+    processors.splice(index, 1);
+    res.json({ message: 'Deleted' });
+  } else {
+    await Processor.findByIdAndDelete(id);
+    res.json({ message: 'Deleted' });
+  }
+});
+
 export default router;
