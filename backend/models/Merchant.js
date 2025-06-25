@@ -11,6 +11,12 @@ const merchantSchema = new mongoose.Schema({
   agent: String,
   residualSplit: Number,
   nmiApiKey: String,
+  transactionFee: Number,
+  authorizationFee: Number,
+  pricingModel: {
+    type: String,
+    enum: ['Flat Rate', 'Interchange Plus', 'Tiered']
+  },
   residuals: Number,
   chargebacks: Number
 }, { timestamps: true });
