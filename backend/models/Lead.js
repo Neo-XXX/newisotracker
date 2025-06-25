@@ -7,7 +7,11 @@ const leadSchema = new mongoose.Schema({
   source: String,
   notes: String,
   agent: String,
-  status: { type: String, default: 'new' },
+  status: {
+    type: String,
+    enum: ['document upload', 'application', 'pending', 'cancelled', 'approved'],
+    default: 'document upload'
+  },
   acquiringBank: String,
   docsUploaded: { type: Boolean, default: false },
   applicationSigned: { type: Boolean, default: false },
