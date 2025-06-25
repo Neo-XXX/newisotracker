@@ -7,46 +7,92 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
     body {
       overflow-x: hidden;
+      font-family: 'Inter', sans-serif;
+      background-color: #f9fafb;
+      color: #374151;
     }
+
     #sidebar {
       min-height: 100vh;
-      background-color: #1f2937;
+      background-color: #ffffff;
+      border-right: 1px solid #e5e7eb;
     }
+
     #sidebar .nav-link {
-      color: #cbd5e1;
+      color: #6b7280;
       display: flex;
       align-items: center;
       padding: 10px 15px;
-      border-radius: 4px;
+      border-radius: 6px;
       margin-bottom: 5px;
+      transition: background-color 0.2s ease;
     }
+
     #sidebar .nav-link i {
       margin-right: 8px;
     }
+
     #sidebar .nav-link.active,
     #sidebar .nav-link:hover {
-      background-color: #2563eb;
-      color: #fff;
+      background-color: #10a37f;
+      color: #ffffff;
     }
+
     .content-section {
       display: none;
     }
+
     .content-section.active {
       display: block;
+    }
+
+    .card {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    table {
+      background-color: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    thead th {
+      background-color: #f3f4f6;
+      font-weight: 600;
+    }
+
+    tbody td {
+      border-top: 1px solid #e5e7eb;
+    }
+
+    #lead-stages .col {
+      background-color: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    .lead-item {
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom mb-4 shadow-sm">
   <div class="container-fluid">
     <a class="navbar-brand" href="#">ISO Tracker</a>
   </div>
 </nav>
 <div class="container-fluid">
   <div class="row">
-    <nav id="sidebar" class="col-md-2 bg-light py-4">
+    <nav id="sidebar" class="col-md-2 py-4">
       <ul class="nav flex-column">
         <li class="nav-item"><a class="nav-link active" href="#" data-target="home-section"><i class="fas fa-home"></i><span class="ms-2">Home</span></a></li>
         <li class="nav-item"><a class="nav-link" href="#" data-target="leads-section"><i class="fas fa-user-plus"></i><span class="ms-2">Leads</span></a></li>
@@ -202,7 +248,7 @@
         </div>
       <div id="merchants-section" class="content-section">
         <h2>Merchants</h2>
-        <table class="table table-bordered" id="merchants-table">
+        <table class="table table-hover" id="merchants-table">
           <thead class="table-light">
             <tr><th>Name</th><th>MID#</th><th>MCC</th><th>MTD Volume</th><th>Agent</th></tr>
           </thead>
