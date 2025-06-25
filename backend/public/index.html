@@ -18,9 +18,10 @@
     }
 
     #sidebar {
-      min-height: 100vh;
+      min-height: calc(100vh - 56px);
       background-color: #343a40;
       border-right: 1px solid #e5e7eb;
+      padding-top: 0;
     }
 
     @media (min-width: 768px) {
@@ -187,13 +188,13 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom mb-4 shadow-sm">
   <div class="container-fluid d-flex align-items-center">
-    <span class="navbar-brand me-auto">ISO Tracker</span>
+    <span class="navbar-brand me-auto fw-bold">ISO Tracker</span>
     <img src="/logo.svg" alt="ISO Tracker Logo" class="ms-auto" style="height:30px;">
   </div>
 </nav>
 <div class="container-fluid">
   <div class="row">
-    <nav id="sidebar" class="py-4">
+    <nav id="sidebar" class="pb-4 pt-0">
       <ul class="nav flex-column">
         <li class="nav-item"><a class="nav-link active" href="#" data-target="home-section"><i class="fas fa-home"></i><span class="ms-2">Home</span></a></li>
         <li class="nav-item"><a class="nav-link" href="#" data-target="leads-section"><i class="fas fa-user-plus"></i><span class="ms-2">Leads</span></a></li>
