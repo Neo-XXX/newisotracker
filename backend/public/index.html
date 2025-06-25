@@ -484,6 +484,7 @@ function updateDashboardMerchants(merchants) {
     };
     Object.values(stageMap).forEach(obj => obj.ul && (obj.ul.innerHTML = ''));
 
+    leads.forEach(l => {
       const { ul } = stageMap[l.status] || {};
       if (!ul) return;
       const li = document.createElement('li');
