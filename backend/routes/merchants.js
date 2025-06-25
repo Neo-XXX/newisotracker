@@ -1,23 +1,42 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import Merchant from '../models/Merchant.js';
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  const merchants = await Merchant.find();
-  res.json(merchants);
+  if (req.app.locals.useMemoryDB) {
+    res.json(req.app.locals.memoryMerchants);
+  } else {
+    const merchants = await Merchant.find();
+    res.json(merchants);
+  }
 });
 
 router.post('/', async (req, res) => {
-  const merchant = new Merchant(req.body);
-  await merchant.save();
-  res.json(merchant);
+  if (req.app.locals.useMemoryDB) {
+    const merchant = { _id: new mongoose.Types.ObjectId().toString(), ...req.body };
+    req.app.locals.memoryMerchants.push(merchant);
+    res.json(merchant);
+  } else {
+    const merchant = new Merchant(req.body);
+    await merchant.save();
+    res.json(merchant);
+  }
 });
 
 router.patch('/:id', async (req, res) => {
   const { id } = req.params;
-  const merchant = await Merchant.findByIdAndUpdate(id, req.body, { new: true });
-  res.json(merchant);
+  if (req.app.locals.useMemoryDB) {
+    const merchants = req.app.locals.memoryMerchants;
+    const index = merchants.findIndex(m => m._id === id);
+    if (index === -1) return res.status(404).json({ error: 'Not found' });
+    merchants[index] = { ...merchants[index], ...req.body };
+    res.json(merchants[index]);
+  } else {
+    const merchant = await Merchant.findByIdAndUpdate(id, req.body, { new: true });
+    res.json(merchant);
+  }
 });
 
 export default router;
