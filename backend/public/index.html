@@ -412,6 +412,7 @@ function renderLeadMetrics(leads) {
   statuses.forEach(status => {
     const canvas = document.getElementById(`gauge-${status.replace(/\s+/g,'-')}`);
     if (!canvas) return;
+    const count = leads.filter(l => l.status === status).length;
     const percent = Math.round((count / total) * 100);
     const percentElem = canvas.parentElement.querySelector('.gauge-percentage');
     if (percentElem) percentElem.textContent = percent + '%';
@@ -489,6 +490,7 @@ function updateDashboardMerchants(merchants) {
       li.className = 'list-group-item lead-item';
       const revText = l.revenueYearly ? `Rev: $${l.revenueYearly}` : '';
       const imp = l.importance || 'medium';
+      const summaryText = [revText, imp].filter(Boolean).join(' | ');
       li.innerHTML = `<div>${l.name}</div><div class="text-muted small">${summaryText}</div>`;
       li.draggable = true;
       li.dataset.id = l._id;
@@ -568,6 +570,7 @@ async function loadMerchants() {
   const merchants = await res.json();
   const tbody = document.querySelector('#merchants-table tbody');
   tbody.innerHTML = '';
+  merchants.filter(m => m.status === 'approved').forEach(m => {
     const row = document.createElement('tr');
     row.innerHTML = `<td>${m.name}</td><td>${m.mid || ''}</td><td>${m.mcc || ''}</td><td>${m.mtdVolume || 0}</td><td>${m.agent || ''}</td>`;
     tbody.appendChild(row);
