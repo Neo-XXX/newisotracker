@@ -106,6 +106,68 @@
                       <label class="form-label">Phone</label>
                       <input id="lead-phone" class="form-control" name="phone">
                     </div>
+                    <div class="mb-3">
+                      <label class="form-label">Source</label>
+                      <input id="lead-source" class="form-control" name="source">
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Notes</label>
+                      <textarea id="lead-notes" class="form-control" name="notes"></textarea>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Agent</label>
+                      <input id="lead-agent" class="form-control" name="agent">
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Status</label>
+                      <select id="lead-status" class="form-select" name="status">
+                        <option value="document upload">Document Upload</option>
+                        <option value="application">Application</option>
+                        <option value="pending">Pending</option>
+                        <option value="cancelled">Cancelled</option>
+                        <option value="approved">Approved</option>
+                      </select>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Acquiring Bank</label>
+                      <input id="lead-acquiring-bank" class="form-control" name="acquiringBank">
+                    </div>
+                    <div class="form-check mb-2">
+                      <input class="form-check-input" type="checkbox" id="lead-docs-uploaded" name="docsUploaded">
+                      <label class="form-check-label" for="lead-docs-uploaded">Docs Uploaded</label>
+                    </div>
+                    <div class="form-check mb-2">
+                      <input class="form-check-input" type="checkbox" id="lead-application-signed" name="applicationSigned">
+                      <label class="form-check-label" for="lead-application-signed">Application Signed</label>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Underwriting Status</label>
+                      <input id="lead-underwriting-status" class="form-control" name="underwritingStatus">
+                    </div>
+                    <div class="form-check mb-2">
+                      <input class="form-check-input" type="checkbox" id="lead-var-sheet-uploaded" name="varSheetUploaded">
+                      <label class="form-check-label" for="lead-var-sheet-uploaded">VAR Sheet Uploaded</label>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">NMI API Key</label>
+                      <input id="lead-nmi-api-key" class="form-control" name="nmiApiKey">
+                    </div>
+                    <div class="form-check mb-2">
+                      <input class="form-check-input" type="checkbox" id="lead-transacting" name="transacting">
+                      <label class="form-check-label" for="lead-transacting">Transacting</label>
+                    </div>
+                    <div class="form-check mb-2">
+                      <input class="form-check-input" type="checkbox" id="lead-residuals-uploaded" name="residualsUploaded">
+                      <label class="form-check-label" for="lead-residuals-uploaded">Residuals Uploaded</label>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Residual Audit Status</label>
+                      <input id="lead-residual-audit-status" class="form-control" name="residualAuditStatus">
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Chargebacks</label>
+                      <input type="number" id="lead-chargebacks" class="form-control" name="chargebacks">
+                    </div>
                   </div>
                   <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">Save</button>
@@ -214,6 +276,20 @@ function updateDashboardMerchants(merchants) {
         document.getElementById('lead-name').value = l.name || '';
         document.getElementById('lead-email').value = l.email || '';
         document.getElementById('lead-phone').value = l.phone || '';
+        document.getElementById('lead-source').value = l.source || '';
+        document.getElementById('lead-notes').value = l.notes || '';
+        document.getElementById('lead-agent').value = l.agent || '';
+        document.getElementById('lead-status').value = l.status || 'document upload';
+        document.getElementById('lead-acquiring-bank').value = l.acquiringBank || '';
+        document.getElementById('lead-docs-uploaded').checked = !!l.docsUploaded;
+        document.getElementById('lead-application-signed').checked = !!l.applicationSigned;
+        document.getElementById('lead-underwriting-status').value = l.underwritingStatus || '';
+        document.getElementById('lead-var-sheet-uploaded').checked = !!l.varSheetUploaded;
+        document.getElementById('lead-nmi-api-key').value = l.nmiApiKey || '';
+        document.getElementById('lead-transacting').checked = !!l.transacting;
+        document.getElementById('lead-residuals-uploaded').checked = !!l.residualsUploaded;
+        document.getElementById('lead-residual-audit-status').value = l.residualAuditStatus || '';
+        document.getElementById('lead-chargebacks').value = l.chargebacks || '';
         document.getElementById('lead-modal-form').dataset.id = l._id;
         bootstrap.Modal.getOrCreateInstance(document.getElementById('lead-modal')).show();
       });
@@ -266,6 +342,12 @@ document.getElementById('show-add-lead').addEventListener('click', () => {
   const form = document.getElementById('lead-modal-form');
   form.reset();
   delete form.dataset.id;
+  document.getElementById('lead-status').value = 'document upload';
+  document.getElementById('lead-docs-uploaded').checked = false;
+  document.getElementById('lead-application-signed').checked = false;
+  document.getElementById('lead-var-sheet-uploaded').checked = false;
+  document.getElementById('lead-transacting').checked = false;
+  document.getElementById('lead-residuals-uploaded').checked = false;
   bootstrap.Modal.getOrCreateInstance(document.getElementById('lead-modal')).show();
 });
 
@@ -273,6 +355,12 @@ document.getElementById('lead-modal-form').addEventListener('submit', async (e) 
   e.preventDefault();
   const formData = new FormData(e.target);
   const data = Object.fromEntries(formData.entries());
+  data.docsUploaded = document.getElementById('lead-docs-uploaded').checked;
+  data.applicationSigned = document.getElementById('lead-application-signed').checked;
+  data.varSheetUploaded = document.getElementById('lead-var-sheet-uploaded').checked;
+  data.transacting = document.getElementById('lead-transacting').checked;
+  data.residualsUploaded = document.getElementById('lead-residuals-uploaded').checked;
+  if (data.chargebacks) data.chargebacks = Number(data.chargebacks);
   const id = e.target.dataset.id;
   const method = id ? 'PATCH' : 'POST';
   const url = id ? `/api/leads/${id}` : '/api/leads';
