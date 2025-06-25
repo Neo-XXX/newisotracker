@@ -90,7 +90,7 @@
     }
 
     #lead-stages .col {
-      flex: 0 0 230px;
+      flex: 0 0 170px;
       background-color: #f9fafb;
       border-radius: 8px;
       padding: 10px;
@@ -137,17 +137,25 @@
     }
 
     .gauge-percentage {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       font-weight: 600;
       font-size: 0.9rem;
     }
 
-    #lead-modal .modal-dialog {
-      max-width: 800px;
+    .lead-panel {
+      width: 300px;
+      flex: 0 0 300px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 10px;
+      overflow-y: auto;
+      max-height: 80vh;
     }
 
-    #lead-modal .modal-body {
-      font-size: 0.8rem;
-    }
   </style>
 </head>
 <body>
@@ -224,26 +232,44 @@
             </div>
           </div>
 
-          <!-- Lead Modal -->
-          <div class="modal fade" id="lead-modal" tabindex="-1">
-            <div class="modal-dialog modal-lg modal-dialog-scrollable">
-              <div class="modal-content">
-                <form id="lead-modal-form">
-                  <div class="modal-header">
-                    <h5 class="modal-title">Lead</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body small">
-                    <div class="container-fluid">
-                      <div class="row g-2">
-                        <div class="col-md-6">
-                          <label class="form-label">Name</label>
-                          <input id="lead-name" class="form-control" name="name" required>
-                        </div>
-                        <div class="col-md-6">
-                          <label class="form-label">Email</label>
-                          <input id="lead-email" class="form-control" name="email">
-                        </div>
+          <div id="lead-interface" class="d-flex gap-3 mt-3">
+            <div class="flex-grow-1 overflow-auto">
+              <div class="row text-center" id="lead-stages">
+                <div class="col">
+                  <h5>Document Upload</h5>
+                  <ul class="list-group" id="stage-document-upload"></ul>
+                </div>
+                <div class="col">
+                  <h5>Application</h5>
+                  <ul class="list-group" id="stage-application"></ul>
+                </div>
+                <div class="col">
+                  <h5>Pending</h5>
+                  <ul class="list-group" id="stage-pending"></ul>
+                </div>
+                <div class="col">
+                  <h5>Cancelled</h5>
+                  <ul class="list-group" id="stage-cancelled"></ul>
+                </div>
+                <div class="col">
+                  <h5>Approved</h5>
+                  <ul class="list-group" id="stage-approved"></ul>
+                </div>
+              </div>
+            </div>
+            <div id="lead-panel" class="lead-panel d-none">
+              <form id="lead-form" class="small">
+                <h5 class="mb-2">Lead</h5>
+                <div class="container-fluid p-0">
+                  <div class="row g-2">
+                    <div class="col-md-6">
+                      <label class="form-label">Name</label>
+                      <input id="lead-name" class="form-control" name="name" required>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Email</label>
+                      <input id="lead-email" class="form-control" name="email">
+                    </div>
                         <div class="col-md-6">
                           <label class="form-label">Phone</label>
                           <input id="lead-phone" class="form-control" name="phone">
@@ -334,38 +360,14 @@
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Save</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <div class="mt-3 text-end">
+                    <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                    <button type="button" id="cancel-lead" class="btn btn-secondary btn-sm">Cancel</button>
                   </div>
                 </form>
               </div>
             </div>
           </div>
-          <div class="row text-center" id="lead-stages">
-            <div class="col">
-              <h5>Document Upload</h5>
-              <ul class="list-group" id="stage-document-upload"></ul>
-            </div>
-            <div class="col">
-              <h5>Application</h5>
-              <ul class="list-group" id="stage-application"></ul>
-            </div>
-            <div class="col">
-              <h5>Pending</h5>
-              <ul class="list-group" id="stage-pending"></ul>
-            </div>
-            <div class="col">
-              <h5>Cancelled</h5>
-              <ul class="list-group" id="stage-cancelled"></ul>
-            </div>
-            <div class="col">
-              <h5>Approved</h5>
-              <ul class="list-group" id="stage-approved"></ul>
-            </div>
-          </div>
-        </div>
       <div id="merchants-section" class="content-section">
         <h2>Merchants</h2>
         <table class="table table-hover" id="merchants-table">
@@ -408,7 +410,6 @@ function renderLeadMetrics(leads) {
   const total = leads.length || 1;
   const statuses = Object.keys(gaugeColors);
   statuses.forEach(status => {
-    const count = leads.filter(l => l.status === status).length;
     const canvas = document.getElementById(`gauge-${status.replace(/\s+/g,'-')}`);
     if (!canvas) return;
     const percent = Math.round((count / total) * 100);
@@ -430,14 +431,12 @@ function updateDashboardLeads(leads) {
   const list = document.getElementById('dashboard-active-leads');
   if (!list) return;
   list.innerHTML = '';
-  leads
-    .filter(l => l.status !== 'cancelled' && l.status !== 'approved')
-    .forEach(l => {
-      const li = document.createElement('li');
-      li.className = 'list-group-item d-flex justify-content-between';
-      li.innerHTML = `<span>${l.name}</span><span class="text-muted">${l.status}</span>`;
-      list.appendChild(li);
-    });
+  leads.forEach(l => {
+    const li = document.createElement('li');
+    li.className = 'list-group-item d-flex justify-content-between';
+    li.innerHTML = `<span>${l.name}</span><span class="text-muted">${l.status}</span>`;
+    list.appendChild(li);
+  });
 }
 
 function updateDashboardMerchants(merchants) {
@@ -484,14 +483,12 @@ function updateDashboardMerchants(merchants) {
     };
     Object.values(stageMap).forEach(obj => obj.ul && (obj.ul.innerHTML = ''));
 
-    leads.forEach(l => {
       const { ul } = stageMap[l.status] || {};
       if (!ul) return;
       const li = document.createElement('li');
       li.className = 'list-group-item lead-item';
       const revText = l.revenueYearly ? `Rev: $${l.revenueYearly}` : '';
       const imp = l.importance || 'medium';
-      const summaryText = [revText, imp].filter(Boolean).join(' | ');
       li.innerHTML = `<div>${l.name}</div><div class="text-muted small">${summaryText}</div>`;
       li.draggable = true;
       li.dataset.id = l._id;
@@ -526,8 +523,7 @@ function updateDashboardMerchants(merchants) {
         document.getElementById('lead-residuals-uploaded').checked = !!l.residualsUploaded;
         document.getElementById('lead-residual-audit-status').value = l.residualAuditStatus || '';
         document.getElementById('lead-chargebacks').value = l.chargebacks || '';
-        document.getElementById('lead-modal-form').dataset.id = l._id;
-        bootstrap.Modal.getOrCreateInstance(document.getElementById('lead-modal')).show();
+        document.getElementById("lead-panel").classList.remove("d-none");
       });
 
       ul.appendChild(li);
@@ -572,7 +568,6 @@ async function loadMerchants() {
   const merchants = await res.json();
   const tbody = document.querySelector('#merchants-table tbody');
   tbody.innerHTML = '';
-  merchants.filter(m => m.status === 'approved').forEach(m => {
     const row = document.createElement('tr');
     row.innerHTML = `<td>${m.name}</td><td>${m.mid || ''}</td><td>${m.mcc || ''}</td><td>${m.mtdVolume || 0}</td><td>${m.agent || ''}</td>`;
     tbody.appendChild(row);
@@ -591,7 +586,7 @@ document.querySelectorAll('#sidebar .nav-link').forEach(link => {
 });
 
 document.getElementById('show-add-lead').addEventListener('click', () => {
-  const form = document.getElementById('lead-modal-form');
+  const form = document.getElementById('lead-form');
   form.reset();
   delete form.dataset.id;
   document.getElementById('lead-status').value = 'document upload';
@@ -601,10 +596,11 @@ document.getElementById('show-add-lead').addEventListener('click', () => {
   document.getElementById('lead-var-sheet-uploaded').checked = false;
   document.getElementById('lead-transacting').checked = false;
   document.getElementById('lead-residuals-uploaded').checked = false;
-  bootstrap.Modal.getOrCreateInstance(document.getElementById('lead-modal')).show();
+    document.getElementById("lead-panel").classList.remove("d-none");
 });
+document.getElementById("cancel-lead").addEventListener("click", () => document.getElementById("lead-panel").classList.add("d-none"));
 
-document.getElementById('lead-modal-form').addEventListener('submit', async (e) => {
+document.getElementById('lead-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const formData = new FormData(e.target);
   const data = Object.fromEntries(formData.entries());
@@ -623,7 +619,7 @@ document.getElementById('lead-modal-form').addEventListener('submit', async (e) 
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   });
-  bootstrap.Modal.getInstance(document.getElementById('lead-modal')).hide();
+    document.getElementById("lead-panel").classList.add("d-none");
   loadLeads();
 });
 
