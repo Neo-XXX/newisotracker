@@ -95,6 +95,12 @@
       border-radius: 8px;
       padding: 10px;
       border: 1px solid #e5e7eb;
+      min-height: 250px;
+      position: relative;
+    }
+
+    #lead-stages .col ul {
+      min-height: 80px;
     }
 
     #lead-stages .col h5 {
@@ -384,16 +390,31 @@ function updateDashboardMerchants(merchants) {
     const leads = await res.json();
 
     const stageMap = {
-      'document upload': document.getElementById('stage-document-upload'),
-      'application': document.getElementById('stage-application'),
-      'pending': document.getElementById('stage-pending'),
-      'cancelled': document.getElementById('stage-cancelled'),
-      'approved': document.getElementById('stage-approved')
+      'document upload': {
+        ul: document.getElementById('stage-document-upload'),
+        container: document.getElementById('stage-document-upload').closest('.col')
+      },
+      'application': {
+        ul: document.getElementById('stage-application'),
+        container: document.getElementById('stage-application').closest('.col')
+      },
+      'pending': {
+        ul: document.getElementById('stage-pending'),
+        container: document.getElementById('stage-pending').closest('.col')
+      },
+      'cancelled': {
+        ul: document.getElementById('stage-cancelled'),
+        container: document.getElementById('stage-cancelled').closest('.col')
+      },
+      'approved': {
+        ul: document.getElementById('stage-approved'),
+        container: document.getElementById('stage-approved').closest('.col')
+      }
     };
-    Object.values(stageMap).forEach(ul => ul && (ul.innerHTML = ''));
+    Object.values(stageMap).forEach(obj => obj.ul && (obj.ul.innerHTML = ''));
 
     leads.forEach(l => {
-      const ul = stageMap[l.status];
+      const { ul } = stageMap[l.status] || {};
       if (!ul) return;
       const li = document.createElement('li');
       li.className = 'list-group-item lead-item';
@@ -441,18 +462,19 @@ function updateDashboardMerchants(merchants) {
       ul.appendChild(li);
     });
 
-    Object.entries(stageMap).forEach(([status, ul]) => {
-      ul.classList.add('drop-target');
-      ul.addEventListener('dragover', e => {
+    Object.entries(stageMap).forEach(([status, { container }]) => {
+      const target = container;
+      target.classList.add('drop-target');
+      target.addEventListener('dragover', e => {
         e.preventDefault();
-        ul.classList.add('drag-over');
+        target.classList.add('drag-over');
       });
-      ul.addEventListener('dragleave', () => {
-        ul.classList.remove('drag-over');
+      target.addEventListener('dragleave', () => {
+        target.classList.remove('drag-over');
       });
-      ul.addEventListener('drop', async e => {
+      target.addEventListener('drop', async e => {
         e.preventDefault();
-        ul.classList.remove('drag-over');
+        target.classList.remove('drag-over');
         const id = e.dataTransfer.getData('text/plain');
         if (!id) return;
         await fetch(`/api/leads/${id}`, {
