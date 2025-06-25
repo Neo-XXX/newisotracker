@@ -33,22 +33,28 @@ const MONGO_URI =
   process.env.MONGO_URI ||
   'mongodb+srv://iso_user:iso_pass123@isoapp.i6ozni3.mongodb.net/?retryWrites=true&w=majority&appName=isoapp';
 
+app.locals.useMemoryDB = true;
+app.locals.memoryLeads = [];
+app.locals.memoryMerchants = [];
+
 if (MONGO_URI && !MONGO_URI.includes('<db_password>')) {
   mongoose
     .connect(MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     })
-    .then(() => console.log('Connected to MongoDB'))
-    .catch((err) =>
-      console.error('Failed to connect to MongoDB:', err.message)
-    );
-  app.locals.useMemoryDB = false;
+    .then(() => {
+      console.log('Connected to MongoDB');
+      app.locals.useMemoryDB = false;
+    })
+    .catch((err) => {
+      console.error(
+        'Failed to connect to MongoDB, using in-memory store:',
+        err.message
+      );
+    });
 } else {
   console.log('No valid MongoDB connection string provided. Using in-memory store.');
-  app.locals.useMemoryDB = true;
-  app.locals.memoryLeads = [];
-  app.locals.memoryMerchants = [];
 }
 
 if (!process.env.VERCEL) {
