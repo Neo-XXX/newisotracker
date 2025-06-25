@@ -29,7 +29,9 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-const MONGO_URI = process.env.MONGO_URI;
+const MONGO_URI =
+  process.env.MONGO_URI ||
+  'mongodb+srv://iso_user:iso_pass123@isoapp.i6ozni3.mongodb.net/?retryWrites=true&w=majority&appName=isoapp';
 
 if (MONGO_URI && !MONGO_URI.includes('<db_password>')) {
   mongoose
