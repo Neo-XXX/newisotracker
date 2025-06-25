@@ -34,7 +34,7 @@ uses `dotenv` so values from `.env` are automatically loaded when you run
 `npm start`. A sample connection string is shown below:
 
 ```
-mongodb+srv://iso_user:<db_password>@isoapp.i6ozni3.mongodb.net/?retryWrites=true&w=majority&appName=isoapp
+mongodb+srv://iso_user:iso_pass123@isoapp.i6ozni3.mongodb.net/?retryWrites=true&w=majority&appName=isoapp
 ```
 
 ## Adding a sample merchant
