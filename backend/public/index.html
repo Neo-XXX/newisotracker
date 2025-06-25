@@ -125,6 +125,14 @@
     .drop-target.drag-over {
       background-color: #e0f2fe;
     }
+
+    #lead-modal .modal-dialog {
+      max-width: 800px;
+    }
+
+    #lead-modal .modal-body {
+      font-size: 0.8rem;
+    }
   </style>
 </head>
 <body>
@@ -175,99 +183,113 @@
 
           <!-- Lead Modal -->
           <div class="modal fade" id="lead-modal" tabindex="-1">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
               <div class="modal-content">
                 <form id="lead-modal-form">
                   <div class="modal-header">
                     <h5 class="modal-title">Lead</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
-                  <div class="modal-body">
-                    <div class="mb-3">
-                      <label class="form-label">Name</label>
-                      <input id="lead-name" class="form-control" name="name" required>
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label">Email</label>
-                      <input id="lead-email" class="form-control" name="email">
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label">Phone</label>
-                      <input id="lead-phone" class="form-control" name="phone">
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label">Source</label>
-                      <input id="lead-source" class="form-control" name="source">
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label">Notes</label>
-                      <textarea id="lead-notes" class="form-control" name="notes"></textarea>
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label">Agent</label>
-                      <input id="lead-agent" class="form-control" name="agent">
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label">Revenue Yearly</label>
-                      <input type="number" id="lead-revenue-yearly" class="form-control" name="revenueYearly">
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label">Importance</label>
-                      <select id="lead-importance" class="form-select" name="importance">
-                        <option value="high">High</option>
-                        <option value="medium" selected>Medium</option>
-                        <option value="low">Low</option>
-                      </select>
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label">Status</label>
-                      <select id="lead-status" class="form-select" name="status">
-                        <option value="document upload">Document Upload</option>
-                        <option value="application">Application</option>
-                        <option value="pending">Pending</option>
-                        <option value="cancelled">Cancelled</option>
-                        <option value="approved">Approved</option>
-                      </select>
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label">Acquiring Bank</label>
-                      <input id="lead-acquiring-bank" class="form-control" name="acquiringBank">
-                    </div>
-                    <div class="form-check mb-2">
-                      <input class="form-check-input" type="checkbox" id="lead-docs-uploaded" name="docsUploaded">
-                      <label class="form-check-label" for="lead-docs-uploaded">Docs Uploaded</label>
-                    </div>
-                    <div class="form-check mb-2">
-                      <input class="form-check-input" type="checkbox" id="lead-application-signed" name="applicationSigned">
-                      <label class="form-check-label" for="lead-application-signed">Application Signed</label>
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label">Underwriting Status</label>
-                      <input id="lead-underwriting-status" class="form-control" name="underwritingStatus">
-                    </div>
-                    <div class="form-check mb-2">
-                      <input class="form-check-input" type="checkbox" id="lead-var-sheet-uploaded" name="varSheetUploaded">
-                      <label class="form-check-label" for="lead-var-sheet-uploaded">VAR Sheet Uploaded</label>
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label">NMI API Key</label>
-                      <input id="lead-nmi-api-key" class="form-control" name="nmiApiKey">
-                    </div>
-                    <div class="form-check mb-2">
-                      <input class="form-check-input" type="checkbox" id="lead-transacting" name="transacting">
-                      <label class="form-check-label" for="lead-transacting">Transacting</label>
-                    </div>
-                    <div class="form-check mb-2">
-                      <input class="form-check-input" type="checkbox" id="lead-residuals-uploaded" name="residualsUploaded">
-                      <label class="form-check-label" for="lead-residuals-uploaded">Residuals Uploaded</label>
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label">Residual Audit Status</label>
-                      <input id="lead-residual-audit-status" class="form-control" name="residualAuditStatus">
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label">Chargebacks</label>
-                      <input type="number" id="lead-chargebacks" class="form-control" name="chargebacks">
+                  <div class="modal-body small">
+                    <div class="container-fluid">
+                      <div class="row g-2">
+                        <div class="col-md-6">
+                          <label class="form-label">Name</label>
+                          <input id="lead-name" class="form-control" name="name" required>
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">Email</label>
+                          <input id="lead-email" class="form-control" name="email">
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">Phone</label>
+                          <input id="lead-phone" class="form-control" name="phone">
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">Source</label>
+                          <input id="lead-source" class="form-control" name="source">
+                        </div>
+                        <div class="col-12">
+                          <label class="form-label">Notes</label>
+                          <textarea id="lead-notes" class="form-control" name="notes"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">Agent</label>
+                          <input id="lead-agent" class="form-control" name="agent">
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">Revenue Yearly</label>
+                          <input type="number" id="lead-revenue-yearly" class="form-control" name="revenueYearly">
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">Importance</label>
+                          <select id="lead-importance" class="form-select" name="importance">
+                            <option value="high">High</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="low">Low</option>
+                          </select>
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">Status</label>
+                          <select id="lead-status" class="form-select" name="status">
+                            <option value="document upload">Document Upload</option>
+                            <option value="application">Application</option>
+                            <option value="pending">Pending</option>
+                            <option value="cancelled">Cancelled</option>
+                            <option value="approved">Approved</option>
+                          </select>
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">Acquiring Bank</label>
+                          <input id="lead-acquiring-bank" class="form-control" name="acquiringBank">
+                        </div>
+                        <div class="col-md-6 d-flex align-items-center">
+                          <div class="form-check ms-2">
+                            <input class="form-check-input" type="checkbox" id="lead-docs-uploaded" name="docsUploaded">
+                            <label class="form-check-label" for="lead-docs-uploaded">Docs Uploaded</label>
+                          </div>
+                        </div>
+                        <div class="col-md-6 d-flex align-items-center">
+                          <div class="form-check ms-2">
+                            <input class="form-check-input" type="checkbox" id="lead-application-signed" name="applicationSigned">
+                            <label class="form-check-label" for="lead-application-signed">Application Signed</label>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">Underwriting Status</label>
+                          <input id="lead-underwriting-status" class="form-control" name="underwritingStatus">
+                        </div>
+                        <div class="col-md-6 d-flex align-items-center">
+                          <div class="form-check ms-2">
+                            <input class="form-check-input" type="checkbox" id="lead-var-sheet-uploaded" name="varSheetUploaded">
+                            <label class="form-check-label" for="lead-var-sheet-uploaded">VAR Sheet Uploaded</label>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">NMI API Key</label>
+                          <input id="lead-nmi-api-key" class="form-control" name="nmiApiKey">
+                        </div>
+                        <div class="col-md-6 d-flex align-items-center">
+                          <div class="form-check ms-2">
+                            <input class="form-check-input" type="checkbox" id="lead-transacting" name="transacting">
+                            <label class="form-check-label" for="lead-transacting">Transacting</label>
+                          </div>
+                        </div>
+                        <div class="col-md-6 d-flex align-items-center">
+                          <div class="form-check ms-2">
+                            <input class="form-check-input" type="checkbox" id="lead-residuals-uploaded" name="residualsUploaded">
+                            <label class="form-check-label" for="lead-residuals-uploaded">Residuals Uploaded</label>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">Residual Audit Status</label>
+                          <input id="lead-residual-audit-status" class="form-control" name="residualAuditStatus">
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">Chargebacks</label>
+                          <input type="number" id="lead-chargebacks" class="form-control" name="chargebacks">
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div class="modal-footer">
