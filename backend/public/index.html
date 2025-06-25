@@ -448,7 +448,7 @@
             <table class="table table-hover" id="processors-table">
               <thead class="table-light">
                 <tr>
-                  <th>Name</th><th>ISO Split %</th><th>Contact</th><th>Phone</th><th>Email</th><th>Notes</th>
+                  <th>Name</th><th>ISO Split %</th><th>Contact</th><th>Phone</th><th>Email</th><th>Notes</th><th>Leads</th><th>Active Merchants</th>
                 </tr>
               </thead>
               <tbody></tbody>
@@ -725,7 +725,9 @@ async function loadProcessors() {
       <td>${p.contact || ''}</td>
       <td>${p.phone || ''}</td>
       <td>${p.email || ''}</td>
-      <td>${p.notes || ''}</td>`;
+      <td>${p.notes || ''}</td>
+      <td>${p.leads ?? 0}</td>
+      <td>${p.activeMerchants ?? 0}</td>`;
     row.dataset.id = p._id;
     row.addEventListener('click', () => {
       currentProcessor = p._id;

@@ -6,7 +6,9 @@ const processorSchema = new mongoose.Schema({
   contact: String,
   phone: String,
   email: String,
-  notes: String
+  notes: String,
+  leads: { type: Number, default: 0 },
+  activeMerchants: { type: Number, default: 0 }
 }, { timestamps: true });
 
 export default mongoose.model('Processor', processorSchema);

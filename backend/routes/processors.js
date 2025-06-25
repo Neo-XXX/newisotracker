@@ -1,15 +1,33 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import Processor from '../models/Processor.js';
+import Lead from '../models/Lead.js';
+import Merchant from '../models/Merchant.js';
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
   if (req.app.locals.useMemoryDB) {
-    res.json(req.app.locals.memoryProcessors);
+    const { memoryProcessors, memoryLeads, memoryMerchants } = req.app.locals;
+    const processors = memoryProcessors.map(p => ({
+      ...p,
+      leads: memoryLeads.filter(l => l.processor === p.name).length,
+      activeMerchants: memoryMerchants.filter(m => m.processor === p.name && m.status === 'approved').length
+    }));
+    res.json(processors);
   } else {
     const processors = await Processor.find();
-    res.json(processors);
+    const withCounts = await Promise.all(
+      processors.map(async p => {
+        const leads = await Lead.countDocuments({ processor: p.name });
+        const activeMerchants = await Merchant.countDocuments({ processor: p.name, status: 'approved' });
+        const obj = p.toObject();
+        obj.leads = leads;
+        obj.activeMerchants = activeMerchants;
+        return obj;
+      })
+    );
+    res.json(withCounts);
   }
 });
 
