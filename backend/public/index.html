@@ -442,14 +442,57 @@
       </div>
       <div id="processors-section" class="content-section">
         <h2>Processors</h2>
-        <table class="table table-hover" id="processors-table">
-          <thead class="table-light">
-            <tr>
-              <th>Name</th><th>ISO Split %</th><th>Contact</th><th>Phone</th><th>Email</th><th>Notes</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+        <button id="show-add-processor" class="btn btn-primary btn-sm mb-3 d-block">Add Processor</button>
+        <div id="processor-interface" class="d-flex gap-3">
+          <div class="flex-grow-1">
+            <table class="table table-hover" id="processors-table">
+              <thead class="table-light">
+                <tr>
+                  <th>Name</th><th>ISO Split %</th><th>Contact</th><th>Phone</th><th>Email</th><th>Notes</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div id="processor-panel" class="lead-panel d-none">
+            <form id="processor-form">
+              <h5 class="mb-2">Processor</h5>
+              <div class="container-fluid p-0">
+                <div class="row g-2">
+                  <div class="col-md-6">
+                    <label class="form-label">Name</label>
+                    <input id="processor-name" class="form-control" name="name" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">ISO Split %</label>
+                    <input type="number" step="0.01" id="processor-iso-split" class="form-control" name="isoSplit">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Contact</label>
+                    <input id="processor-contact" class="form-control" name="contact">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Phone</label>
+                    <input id="processor-phone" class="form-control" name="phone">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Email</label>
+                    <input id="processor-email" class="form-control" name="email">
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Notes</label>
+                    <textarea id="processor-notes" class="form-control" name="notes"></textarea>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-3 text-end">
+                <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                <button type="button" id="delete-processor" class="btn btn-danger btn-sm d-none">Delete</button>
+                <button type="button" id="cancel-processor" class="btn btn-secondary btn-sm">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
       <div id="residuals-section" class="content-section">
         <h2>Residuals</h2>
@@ -528,6 +571,7 @@ function updateDashboardMerchants(merchants) {
 
   let currentLead = null;
   let leadsData = [];
+  let currentProcessor = null;
 
   async function loadLeads() {
     const res = await fetch('/api/leads');
@@ -682,6 +726,20 @@ async function loadProcessors() {
       <td>${p.phone || ''}</td>
       <td>${p.email || ''}</td>
       <td>${p.notes || ''}</td>`;
+    row.dataset.id = p._id;
+    row.addEventListener('click', () => {
+      currentProcessor = p._id;
+      const form = document.getElementById('processor-form');
+      form.dataset.id = p._id;
+      document.getElementById('delete-processor').classList.remove('d-none');
+      document.getElementById('processor-name').value = p.name || '';
+      document.getElementById('processor-iso-split').value = p.isoSplit ?? '';
+      document.getElementById('processor-contact').value = p.contact || '';
+      document.getElementById('processor-phone').value = p.phone || '';
+      document.getElementById('processor-email').value = p.email || '';
+      document.getElementById('processor-notes').value = p.notes || '';
+      document.getElementById('processor-panel').classList.remove('d-none');
+    });
     tbody.appendChild(row);
   });
   const select = document.getElementById('lead-processor');
@@ -728,6 +786,18 @@ document.getElementById("cancel-lead").addEventListener("click", () => {
   document.getElementById('delete-lead').classList.add('d-none');
 });
 
+document.getElementById('show-add-processor').addEventListener('click', () => {
+  const form = document.getElementById('processor-form');
+  form.reset();
+  delete form.dataset.id;
+  document.getElementById('delete-processor').classList.add('d-none');
+  document.getElementById('processor-panel').classList.remove('d-none');
+});
+document.getElementById('cancel-processor').addEventListener('click', () => {
+  document.getElementById('processor-panel').classList.add('d-none');
+  document.getElementById('delete-processor').classList.add('d-none');
+});
+
 document.getElementById('lead-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const formData = new FormData(e.target);
@@ -763,6 +833,33 @@ document.getElementById('delete-lead').addEventListener('click', async () => {
   document.getElementById('lead-panel').classList.add('d-none');
   document.getElementById('delete-lead').classList.add('d-none');
   loadLeads();
+});
+
+document.getElementById('processor-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const data = Object.fromEntries(formData.entries());
+  if (data.isoSplit) data.isoSplit = Number(data.isoSplit);
+  const id = e.target.dataset.id;
+  const method = id ? 'PATCH' : 'POST';
+  const url = id ? `/api/processors/${id}` : '/api/processors';
+  await fetch(url, {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  document.getElementById('processor-panel').classList.add('d-none');
+  document.getElementById('delete-processor').classList.add('d-none');
+  loadProcessors();
+});
+
+document.getElementById('delete-processor').addEventListener('click', async () => {
+  if (!currentProcessor) return;
+  if (!confirm('Delete this processor?')) return;
+  await fetch(`/api/processors/${currentProcessor}`, { method: 'DELETE' });
+  document.getElementById('processor-panel').classList.add('d-none');
+  document.getElementById('delete-processor').classList.add('d-none');
+  loadProcessors();
 });
 
 loadLeads();
