@@ -377,8 +377,8 @@ function updateDashboardMerchants(merchants) {
       li.className = 'list-group-item lead-item';
       const revText = l.revenueYearly ? `Rev: $${l.revenueYearly}` : '';
       const imp = l.importance || 'medium';
-      const summary = [revText, imp].filter(Boolean).join(' | ');
-      li.innerHTML = `<div>${l.name}</div><div class="text-muted small">${summary}</div>`;
+      const summaryText = [revText, imp].filter(Boolean).join(' | ');
+      li.innerHTML = `<div>${l.name}</div><div class="text-muted small">${summaryText}</div>`;
       li.draggable = true;
       li.dataset.id = l._id;
       li.style.borderLeftColor = importanceColors[l.importance] || colorFor(l.name || '');
@@ -438,7 +438,7 @@ function updateDashboardMerchants(merchants) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status })
         });
-        loadLeads();
+        await loadLeads();
       });
     });
 
