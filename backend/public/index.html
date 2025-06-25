@@ -14,12 +14,23 @@
       font-family: 'Inter', sans-serif;
       background-color: #f9fafb;
       color: #374151;
+      font-size: 0.875rem;
     }
 
     #sidebar {
       min-height: 100vh;
-      background-color: #ffffff;
+      background-color: #f3f4f6;
       border-right: 1px solid #e5e7eb;
+    }
+
+    @media (min-width: 768px) {
+      #sidebar {
+        width: 150px;
+        flex: 0 0 150px;
+      }
+      #main-content {
+        flex: 1;
+      }
     }
 
     #sidebar .nav-link {
@@ -96,7 +107,7 @@
 </nav>
 <div class="container-fluid">
   <div class="row">
-    <nav id="sidebar" class="col-md-2 py-4">
+    <nav id="sidebar" class="py-4">
       <ul class="nav flex-column">
         <li class="nav-item"><a class="nav-link active" href="#" data-target="home-section"><i class="fas fa-home"></i><span class="ms-2">Home</span></a></li>
         <li class="nav-item"><a class="nav-link" href="#" data-target="leads-section"><i class="fas fa-user-plus"></i><span class="ms-2">Leads</span></a></li>
@@ -104,7 +115,7 @@
         <li class="nav-item"><a class="nav-link" href="#" data-target="residuals-section"><i class="fas fa-money-bill-wave"></i><span class="ms-2">Residuals</span></a></li>
       </ul>
     </nav>
-    <main class="col-md-10 py-4">
+    <main id="main-content" class="flex-grow-1 py-4">
         <div id="home-section" class="content-section active">
           <h2>Dashboard</h2>
           <div class="row">
