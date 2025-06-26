@@ -192,6 +192,10 @@
       flex: 0 0 calc(100% - 512px);
     }
 
+    #merchant-table-wrapper {
+      margin-top: 500px;
+    }
+
   </style>
 </head>
 <body>
@@ -215,6 +219,31 @@
     <main id="main-content" class="flex-grow-1 py-4">
         <div id="home-section" class="content-section active">
           <h2>Dashboard</h2>
+          <div id="dashboard-metrics" class="row mb-3 text-center">
+            <div class="col-md-4 mb-3">
+              <div class="card h-100 d-flex align-items-center justify-content-center">
+                <div class="card-body">
+                  <div class="text-muted small">Total Leads</div>
+                  <div class="fs-3 fw-bold" id="metric-total-leads">0</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <div class="card h-100 d-flex align-items-center justify-content-center">
+                <div class="card-body">
+                  <div class="text-muted small">Active Merchants</div>
+                  <div class="fs-3 fw-bold" id="metric-active-merchants">0</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <div class="card h-100">
+                <div class="card-body">
+                  <canvas id="home-residuals-chart" height="120"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="row">
             <div class="col-md-4 mb-3">
               <div class="card">
@@ -441,8 +470,114 @@
       <div id="merchants-section" class="content-section">
         <h2>Merchants</h2>
         <button id="show-add-merchant" class="btn btn-primary btn-sm mb-3 d-block">Add Merchant</button>
-        <div id="merchant-interface" class="d-flex gap-3">
-          <div class="flex-grow-1">
+        <div id="merchant-interface">
+          <div id="merchant-top" class="d-flex gap-3 mb-3">
+            <div id="merchant-analytics" class="flex-grow-1 row g-3">
+              <div class="col-md-4 text-center">
+                <div class="gauge-container position-relative mx-auto">
+                  <canvas id="merchant-count-gauge" width="100" height="100"></canvas>
+                  <div id="merchant-count-label" class="gauge-percentage"></div>
+                  <div class="small mt-1">Merchants</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <canvas id="merchant-processor-pie"></canvas>
+              </div>
+              <div class="col-md-4">
+                <canvas id="merchant-effective-bar"></canvas>
+              </div>
+            </div>
+            <div id="merchant-panel" class="lead-panel d-none">
+              <form id="merchant-form">
+                <h5 class="mb-2">Merchant</h5>
+                <div class="container-fluid p-0">
+                  <div class="row g-2">
+                    <div class="col-md-6">
+                      <label class="form-label">Name</label>
+                      <input id="merchant-name" class="form-control" name="name" required>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Email</label>
+                      <input id="merchant-email" class="form-control" name="email">
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label">MID</label>
+                      <input id="merchant-mid" class="form-control" name="mid">
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label">MCC</label>
+                      <input id="merchant-mcc" class="form-control" name="mcc">
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label">MTD Volume</label>
+                      <input type="number" step="0.01" id="merchant-mtd-volume" class="form-control" name="mtdVolume">
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label">Daily Volume</label>
+                      <input type="number" step="0.01" id="merchant-daily-volume" class="form-control" name="daily">
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label">Weekly Volume</label>
+                      <input type="number" step="0.01" id="merchant-weekly-volume" class="form-control" name="weekly">
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label">YTD Volume</label>
+                      <input type="number" step="0.01" id="merchant-ytd-volume" class="form-control" name="ytd">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Processor</label>
+                      <select id="merchant-processor" class="form-select" name="processor"></select>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Status</label>
+                      <input id="merchant-status" class="form-control" name="status">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Agent</label>
+                      <input id="merchant-agent" class="form-control" name="agent">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Residual Split %</label>
+                      <input type="number" step="0.01" id="merchant-residual-split" class="form-control" name="residualSplit">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">NMI API Key</label>
+                      <input id="merchant-nmi-api-key" class="form-control" name="nmiApiKey">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Transaction Fee</label>
+                      <input type="number" step="0.01" id="merchant-transaction-fee" class="form-control" name="transactionFee">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Authorization Fee</label>
+                      <input type="number" step="0.01" id="merchant-authorization-fee" class="form-control" name="authorizationFee">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Pricing Model</label>
+                      <select id="merchant-pricing-model" class="form-select" name="pricingModel">
+                        <option value="Flat Rate">Flat Rate</option>
+                        <option value="Interchange Plus">Interchange Plus</option>
+                        <option value="Tiered">Tiered</option>
+                      </select>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Residuals</label>
+                      <input type="number" step="0.01" id="merchant-residuals" class="form-control" name="residuals">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Chargebacks</label>
+                      <input type="number" step="0.01" id="merchant-chargebacks" class="form-control" name="chargebacks">
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-3 text-end">
+                  <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                  <button type="button" id="cancel-merchant" class="btn btn-secondary btn-sm">Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div id="merchant-table-wrapper">
             <table class="table table-hover" id="merchants-table">
               <thead class="table-light">
                 <tr>
@@ -451,95 +586,6 @@
               </thead>
               <tbody></tbody>
             </table>
-          </div>
-          <div id="merchant-panel" class="lead-panel d-none">
-            <form id="merchant-form">
-              <h5 class="mb-2">Merchant</h5>
-              <div class="container-fluid p-0">
-                <div class="row g-2">
-                  <div class="col-md-6">
-                    <label class="form-label">Name</label>
-                    <input id="merchant-name" class="form-control" name="name" required>
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label">Email</label>
-                    <input id="merchant-email" class="form-control" name="email">
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label">MID</label>
-                    <input id="merchant-mid" class="form-control" name="mid">
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label">MCC</label>
-                    <input id="merchant-mcc" class="form-control" name="mcc">
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label">MTD Volume</label>
-                    <input type="number" step="0.01" id="merchant-mtd-volume" class="form-control" name="mtdVolume">
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label">Daily Volume</label>
-                    <input type="number" step="0.01" id="merchant-daily-volume" class="form-control" name="daily">
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label">Weekly Volume</label>
-                    <input type="number" step="0.01" id="merchant-weekly-volume" class="form-control" name="weekly">
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label">YTD Volume</label>
-                    <input type="number" step="0.01" id="merchant-ytd-volume" class="form-control" name="ytd">
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label">Processor</label>
-                    <select id="merchant-processor" class="form-select" name="processor"></select>
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label">Status</label>
-                    <input id="merchant-status" class="form-control" name="status">
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label">Agent</label>
-                    <input id="merchant-agent" class="form-control" name="agent">
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label">Residual Split %</label>
-                    <input type="number" step="0.01" id="merchant-residual-split" class="form-control" name="residualSplit">
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label">NMI API Key</label>
-                    <input id="merchant-nmi-api-key" class="form-control" name="nmiApiKey">
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label">Transaction Fee</label>
-                    <input type="number" step="0.01" id="merchant-transaction-fee" class="form-control" name="transactionFee">
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label">Authorization Fee</label>
-                    <input type="number" step="0.01" id="merchant-authorization-fee" class="form-control" name="authorizationFee">
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label">Pricing Model</label>
-                    <select id="merchant-pricing-model" class="form-select" name="pricingModel">
-                      <option value="Flat Rate">Flat Rate</option>
-                      <option value="Interchange Plus">Interchange Plus</option>
-                      <option value="Tiered">Tiered</option>
-                    </select>
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label">Residuals</label>
-                    <input type="number" step="0.01" id="merchant-residuals" class="form-control" name="residuals">
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label">Chargebacks</label>
-                    <input type="number" step="0.01" id="merchant-chargebacks" class="form-control" name="chargebacks">
-                  </div>
-                </div>
-              </div>
-              <div class="mt-3 text-end">
-                <button type="submit" class="btn btn-primary btn-sm">Save</button>
-                <button type="button" id="cancel-merchant" class="btn btn-secondary btn-sm">Cancel</button>
-              </div>
-            </form>
           </div>
         </div>
       </div>
@@ -626,6 +672,49 @@ const gaugeColors = {
 };
 const gaugeCharts = {};
 
+function renderMerchantAnalytics(merchants) {
+  const countCtx = document.getElementById('merchant-count-gauge');
+  if (countCtx) {
+    const total = merchants.length;
+    if (merchantCharts.count) merchantCharts.count.destroy();
+    merchantCharts.count = new Chart(countCtx, {
+      type: 'doughnut',
+      data: { datasets: [{ data: [total, 0], backgroundColor: ['#3b82f6', '#e5e7eb'], borderWidth: 0 }] },
+      options: { cutout: '70%', plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+    });
+    const label = document.getElementById('merchant-count-label');
+    if (label) label.textContent = total;
+  }
+  const procCtx = document.getElementById('merchant-processor-pie');
+  if (procCtx) {
+    const counts = {};
+    merchants.forEach(m => { const p = m.processor || 'Unknown'; counts[p] = (counts[p] || 0) + 1; });
+    const labels = Object.keys(counts);
+    const data = Object.values(counts);
+    if (merchantCharts.processor) merchantCharts.processor.destroy();
+    merchantCharts.processor = new Chart(procCtx, {
+      type: 'pie',
+      data: { labels, datasets: [{ data, backgroundColor: ['#3b82f6','#10b981','#f59e0b','#6366f1','#ef4444'] }] },
+      options: { plugins: { legend: { position: 'bottom' } } }
+    });
+  }
+  const effCtx = document.getElementById('merchant-effective-bar');
+  if (effCtx) {
+    const labels = merchants.map(m => m.name);
+    const data = merchants.map(m => {
+      const vol = m.volume?.ytd || m.mtdVolume || 0;
+      const res = m.residuals || 0;
+      return vol ? +(res / vol * 100).toFixed(2) : 0;
+    });
+    if (merchantCharts.effective) merchantCharts.effective.destroy();
+    merchantCharts.effective = new Chart(effCtx, {
+      type: 'bar',
+      data: { labels, datasets: [{ data, label: 'Effective %', backgroundColor: '#10b981' }] },
+      options: { plugins: { legend: { display: false } }, responsive: true, scales: { y: { beginAtZero: true } } }
+    });
+  }
+}
+
 function renderLeadMetrics(leads) {
   const total = leads.length || 1;
   const statuses = Object.keys(gaugeColors);
@@ -672,10 +761,31 @@ function updateDashboardMerchants(merchants) {
   });
 }
 
+function updateHomeMetrics() {
+  const leadNum = document.getElementById('metric-total-leads');
+  if (leadNum) leadNum.textContent = leadsData.length;
+  const merchNum = document.getElementById('metric-active-merchants');
+  if (merchNum) merchNum.textContent = merchantsData.filter(m => m.status === 'approved').length;
+  const ctx = document.getElementById('home-residuals-chart');
+  if (ctx) {
+    const labels = merchantsData.map(m => m.name);
+    const data = merchantsData.map(m => m.residuals || 0);
+    if (homeResidualsChart) homeResidualsChart.destroy();
+    homeResidualsChart = new Chart(ctx, {
+      type: 'line',
+      data: { labels, datasets: [{ data, borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.2)', fill: true, tension: 0.4 }] },
+      options: { plugins: { legend: { display: false } }, responsive: true, scales: { y: { beginAtZero: true } } }
+    });
+  }
+}
+
   let currentLead = null;
   let leadsData = [];
+  let merchantsData = [];
   let currentProcessor = null;
   let currentMerchant = null;
+  let homeResidualsChart;
+  const merchantCharts = {};
 
   async function loadLeads() {
     const res = await fetch('/api/leads');
@@ -788,16 +898,19 @@ function updateDashboardMerchants(merchants) {
         if (moved) moved.status = status;
         updateDashboardLeads(leadsData);
         renderLeadMetrics(leadsData);
+        updateHomeMetrics();
       });
     });
 
     updateDashboardLeads(leadsData);
     renderLeadMetrics(leadsData);
+    updateHomeMetrics();
   }
 
 async function loadMerchants() {
   const res = await fetch('/api/merchants');
-  const merchants = await res.json();
+  merchantsData = await res.json();
+  const merchants = merchantsData;
   const tbody = document.querySelector('#merchants-table tbody');
   tbody.innerHTML = '';
   merchants.forEach(m => {
@@ -849,6 +962,8 @@ async function loadMerchants() {
     tbody.appendChild(row);
   });
   updateDashboardMerchants(merchants);
+  renderMerchantAnalytics(merchants);
+  updateHomeMetrics();
 }
 
 async function loadProcessors() {
